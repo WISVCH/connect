@@ -33,7 +33,18 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.springframework.boot:spring-boot-starter-thymeleaf")
     compile("org.springframework.boot:spring-boot-starter-web")
+
     compile("org.springframework.security.extensions:spring-security-saml2-core:1.0.1.RELEASE")
+
+//    compile("org.springframework.ldap:spring-ldap")
+    compile("org.springframework.security:spring-security-ldap:3.2.7.RELEASE")
+    compile("org.springframework:spring-tx")
+//    compile("org.apache.directory.server:apacheds-server-jndi:1.5.5")
+
+    compile("com.fasterxml.jackson.core:jackson-core:2.4.1")
+    compile("com.fasterxml.jackson.core:jackson-annotations:2.4.1")
+    compile("com.fasterxml.jackson.core:jackson-databind:2.4.1")
+
     testCompile("org.springframework.boot:spring-boot-starter-test") 
 }
 

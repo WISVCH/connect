@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
-@ImportResource("classpath:saml.xml")
+@ImportResource("classpath:main.xml")
 public class SamltestApplication {
 
     public static void main(String[] args) {
