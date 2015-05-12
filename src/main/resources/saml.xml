@@ -88,14 +88,29 @@
     <bean id="metadataGeneratorFilter" class="org.springframework.security.saml.metadata.MetadataGeneratorFilter">
         <constructor-arg>
             <bean class="org.springframework.security.saml.metadata.MetadataGenerator">
-                <!-- TODO: move to configuration properties -->
                 <property name="entityId" value="${saml.entity_id}"/>
                 <property name="entityBaseURL" value="${saml.entity_baseurl}"/>
-                <!-- TODO: <property name="entityBaseURL" value="" /> -->
+                <property name="bindingsHoKSSO">
+                    <null />
+                </property>
+                <property name="bindingsSLO">
+                    <null />
+                </property>
+                <property name="bindingsSSO">
+                    <list>
+                        <value>#{T(org.opensaml.common.xml.SAMLConstants).SAML2_POST_BINDING_URI}</value>
+                    </list>
+                </property>
+                <property name="nameID">
+                    <list>
+                        <value>#{T(org.opensaml.saml2.core.NameIDType).UNSPECIFIED}</value>
+                        <value>#{T(org.opensaml.saml2.core.NameIDType).PERSISTENT}</value>
+                    </list>
+                </property>
                 <property name="extendedMetadata">
                     <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
-                        <property name="signMetadata" value="false"/>
-                        <property name="idpDiscoveryEnabled" value="false"/>
+                        <property name="idpDiscoveryEnabled" value="false" />
+                        <property name="signMetadata" value="true" />
                     </bean>
                 </property>
             </bean>
