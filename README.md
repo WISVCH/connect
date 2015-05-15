@@ -1,16 +1,7 @@
 # CH Connect
 
-To run CH Connect locally you need to adjust the config first:
+Run locally using:
 
-```
-cp src/main/resources/application-dev.properties src/main/resources/application.properties
-vim src/main/resources/application.properties
-```
+    SPRING_PROFILES_ACTIVE=dev ./gradlew run
 
-Then run the application using:
-
-```
-gradle run
-```
-
-Now surf to http://localhost:8080 :)
+Then surf to http://localhost:8080 :)
