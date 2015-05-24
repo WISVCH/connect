@@ -31,4 +31,8 @@
         <security:anonymous/>
     </security:http>
 
+    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean">
+        <constructor-arg value="${dienst2.apitoken}" />
+    </bean>
+
 </beans>
