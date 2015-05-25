@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Set;
+
 @Controller
 public class MainController {
     @RequestMapping("/")
@@ -18,10 +20,12 @@ public class MainController {
     @ResponseBody
     public String protectedpage(Authentication authentication) throws JsonProcessingException {
         if (authentication instanceof CHAuthenticationToken) {
-            Person person = ((CHAuthenticationToken)
-                    authentication).getPerson();
-            return String.format("<pre>Authenticated\n\n%s\n\n%s %s %s", authentication.getName(), person
-                    .getFirstname(), person.getPreposition(), person.getSurname());
+            CHAuthenticationToken chAuthenticationToken = (CHAuthenticationToken)
+                    authentication;
+            Person person = chAuthenticationToken.getPerson();
+            Set<String> ldapRoles = chAuthenticationToken.getLdapRoles();
+            return String.format("<pre>Authenticated\n\n%s\n\n%s %s %s\nRoles: %s", authentication.getName(), person
+                    .getFirstname(), person.getPreposition(), person.getSurname(), ldapRoles);
         } else {
             return "<pre>Authenticated\n\n" + authentication.getName();
         }

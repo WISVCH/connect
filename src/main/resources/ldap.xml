@@ -1,33 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:security="http://www.springframework.org/schema/security"
-       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <!--<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">-->
-    <!--<security:intercept-url pattern="/login**" access="permitAll"/>-->
-    <!--</security:http>-->
-
-    <!--<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">-->
-        <!--<security:intercept-url pattern="/login**" access="permitAll"/>-->
-    <!--</security:http>-->
-
-    <!--<bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint">-->
-    <!--</bean>-->
-
-    <!--<security:ldap-server url="ldaps://ank.chnet/dc=ank,dc=chnet" />-->
-
-    <!--<security:authentication-manager>-->
-        <!--<security:ldap-authentication-provider-->
-                <!--user-search-filter="(uid={0})"-->
-                <!--user-search-base="ou=users"-->
-                <!--group-search-filter="(uniqueMember={0})"-->
-                <!--group-search-base="ou=groups"-->
-                <!--group-role-attribute="cn"-->
-                <!--role-prefix="ROLE_">-->
-        <!--</security:ldap-authentication-provider>-->
-    <!--</security:authentication-manager>-->
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="ldapAuthenticationProvider"
           class="org.springframework.security.ldap.authentication.LdapAuthenticationProvider">
@@ -47,8 +21,8 @@
                 <constructor-arg ref="ldapContextSource"/>
                 <constructor-arg value="ou=Group"/>
                 <property name="groupRoleAttribute" value="cn"/>
-                <property name="searchSubtree" value="true" />
-                <property name="groupSearchFilter" value="memberUid={1}" />
+                <property name="searchSubtree" value="true"/>
+                <property name="groupSearchFilter" value="memberUid={1}"/>
             </bean>
         </constructor-arg>
     </bean>
