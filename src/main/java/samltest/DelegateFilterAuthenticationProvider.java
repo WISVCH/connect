@@ -23,13 +23,13 @@ public class DelegateFilterAuthenticationProvider implements AuthenticationProvi
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("Got authenticate request");
+        log.debug("Pre-delegate authentication type: {}", authentication.getClass().toGenericString());
 
         authentication = delegate.authenticate(authentication);
-
-        log.info("Authentication type: {}", authentication.getClass().toGenericString());
+        log.debug("Post-delegate authentication type: {}", authentication.getClass().toGenericString());
 
         authentication = filter.authenticate(authentication);
+        log.debug("Post-filter authentication type: {}", authentication.getClass().toGenericString());
 
         return authentication;
     }

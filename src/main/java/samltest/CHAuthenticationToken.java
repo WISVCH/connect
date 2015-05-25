@@ -1,5 +1,6 @@
 package samltest;
 
+import ch.wisv.dienst2.apiclient.model.Person;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,28 +15,27 @@ import java.util.Date;
  */
 public class CHAuthenticationToken extends ExpiringUsernameAuthenticationToken {
 
-    private int memberNumber;
+    private Person person;
     private Authentication originalAuthentication;
 
-    public static CHAuthenticationToken createAuthenticationToken(Authentication originalAuthentication, int
-            memberNumber) {
+    public static CHAuthenticationToken createAuthenticationToken(Authentication originalAuthentication, Person person) {
         Date tokenExpiration;
         if (originalAuthentication instanceof ExpiringUsernameAuthenticationToken) {
             tokenExpiration = ((ExpiringUsernameAuthenticationToken) originalAuthentication).getTokenExpiration();
         } else {
             tokenExpiration = Date.from(Instant.now().plusSeconds(8L * 3600L));
         }
-        String principal = "WISVCH." + memberNumber;
+        String principal = "WISVCH." + person.getId();
         Collection<? extends GrantedAuthority> authorities = originalAuthentication.getAuthorities();
-        return new CHAuthenticationToken(tokenExpiration, principal, null, authorities,
-                originalAuthentication, memberNumber);
+        return new CHAuthenticationToken(tokenExpiration, principal, person, authorities,
+                originalAuthentication);
     }
 
-    public CHAuthenticationToken(Date tokenExpiration, Object principal, Object credentials, Collection<? extends
-            GrantedAuthority> authorities, Authentication originalAuthentication, int memberNumber) {
-        super(tokenExpiration, principal, credentials, authorities);
+    public CHAuthenticationToken(Date tokenExpiration, Object principal, Person person, Collection<? extends
+            GrantedAuthority> authorities, Authentication originalAuthentication) {
+        super(tokenExpiration, principal, null, authorities);
         this.originalAuthentication = originalAuthentication;
-        this.memberNumber = memberNumber;
+        this.person = person;
     }
 
 
@@ -46,7 +46,7 @@ public class CHAuthenticationToken extends ExpiringUsernameAuthenticationToken {
         }
     }
 
-    public int getMemberNumber() {
-        return memberNumber;
+    public Person getPerson() {
+        return person;
     }
 }

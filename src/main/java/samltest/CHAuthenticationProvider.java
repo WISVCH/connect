@@ -1,5 +1,7 @@
 package samltest;
 
+import ch.wisv.dienst2.apiclient.model.Member;
+import ch.wisv.dienst2.apiclient.model.Person;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.security.saml.SAMLCredential;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -41,27 +44,14 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             log.info("Authenticated: " + authentication.getName() + " - " + attributesString);
 
             String samlStudentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
-            try {
-                int memberNumber = dienst2Repository.verifyMembershipFromStudentNumber(samlStudentNumber);
-                log.info("CH Member #{}", memberNumber);
-                return CHAuthenticationToken.createAuthenticationToken(authentication, memberNumber);
-            } catch (Dienst2Repository.Dienst2Exception e) {
-                log.error("Dienst2 error", e);
-                throw new InsufficientAuthenticationException("Member check failed", e);
-            }
+            Person person = getPersonFromStudentNumber(samlStudentNumber);
+            return CHAuthenticationToken.createAuthenticationToken(authentication, person);
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
             log.info("Authenticated: " + ldapUsername);
-
-            try {
-                int memberNumber = dienst2Repository.verifyMembershipFromLdapUsername(ldapUsername);
-                log.info("CH Member #{}", memberNumber);
-                return CHAuthenticationToken.createAuthenticationToken(authentication, memberNumber);
-            } catch (Dienst2Repository.Dienst2Exception e) {
-                log.error("Dienst2 error", e);
-                throw new InsufficientAuthenticationException("Member check failed", e);
-            }
+            Person person = getPersonFromLdapUsername(ldapUsername);
+            return CHAuthenticationToken.createAuthenticationToken(authentication, person);
         } else {
             log.debug("Invalid authentication object type");
             throw new IllegalArgumentException("Invalid authentication object type");
@@ -71,5 +61,22 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     @Override
     public boolean supports(Class<?> authentication) {
         return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+    }
+
+    private Person getPersonFromStudentNumber(String studentNumber) {
+        // If we get a NetID username from SAML, we should verify it against Dienst2 as well.
+        return verifyMembership(dienst2Repository.getPersonFromStudentNumber(studentNumber));
+    }
+
+    private Person getPersonFromLdapUsername(String studentNumber) {
+        return verifyMembership(dienst2Repository.getPersonFromLdapUsername(studentNumber));
+    }
+
+    private Person verifyMembership(Optional<Person> person) {
+        return person.filter(this::verifyMembership).orElseThrow(() -> new InsufficientAuthenticationException("Not a CH member"));
+    }
+
+    public boolean verifyMembership(Person person) {
+        return person.getMember().map(Member::isCurrentMember).orElse(false);
     }
 }

@@ -21,9 +21,6 @@ public class MainController {
     @RequestMapping("/protected")
     @ResponseBody
     public String protectedpage(Authentication authentication) throws JsonProcessingException {
-//        return authentication.getName() + " _ " + ((SAMLCredential) authentication.getCredentials())
-// .getAttributeAsString("tudStudentNumber");
-
         Object credentials = authentication.getCredentials();
         if (credentials != null && credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
