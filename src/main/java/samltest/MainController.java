@@ -20,12 +20,11 @@ public class MainController {
     @ResponseBody
     public String protectedpage(Authentication authentication) throws JsonProcessingException {
         if (authentication instanceof CHAuthenticationToken) {
-            CHAuthenticationToken chAuthenticationToken = (CHAuthenticationToken)
-                    authentication;
-            Person person = chAuthenticationToken.getPerson();
-            Set<String> ldapRoles = chAuthenticationToken.getLdapRoles();
-            return String.format("<pre>Authenticated\n\n%s\n\n%s %s %s\nRoles: %s", authentication.getName(), person
-                    .getFirstname(), person.getPreposition(), person.getSurname(), ldapRoles);
+            CHUserDetails userDetails = (CHUserDetails) authentication.getPrincipal();
+            Person person = userDetails.getPerson();
+            Set<String> ldapGroups = userDetails.getLdapGroups();
+            return String.format("<pre>Authenticated\n\n%s\n\n%s %s %s\nLDAP Groups: %s", authentication.getName(), person
+                    .getFirstname(), person.getPreposition(), person.getSurname(), ldapGroups);
         } else {
             return "<pre>Authenticated\n\n" + authentication.getName();
         }
