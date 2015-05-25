@@ -12,14 +12,7 @@
 
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="ldapAuthenticationProvider" />
-        <!-- Register authentication manager for SAML provider -->
         <security:authentication-provider ref="samlAuthenticationProvider"/>
-        <!-- Register authentication manager for administration UI -->
-        <security:authentication-provider>
-            <security:user-service id="adminInterfaceService">
-                <security:user name="admin" password="admin" authorities="ROLE_ADMIN"/>
-            </security:user-service>
-        </security:authentication-provider>
     </security:authentication-manager>
 
     <security:http disable-url-rewriting="true" use-expressions="true">
