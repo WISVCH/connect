@@ -28,6 +28,8 @@ public class Dienst2Repository {
     };
 
     // TODO: Wel of geen exceptions?
+    // TODO: onderscheid tussen overwachte fouten (API niet bereikbaar) of verwachte fouten (geen lid)
+    // TODO: verifyMembership naar CHAuthenticationProvider
     public int verifyMembershipFromLdapUsername(String ldapUsername) throws Dienst2Exception {
         Person person = getPersonFromLdapUsername(ldapUsername);
         return verifyMembership(person);

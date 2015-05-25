@@ -2,30 +2,35 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:c="http://www.springframework.org/schema/c"
        xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <import resource="ldap.xml"/>
     <import resource="saml.xml"/>
 
+    <bean id="chAuthenticationProvider" class="samltest.CHAuthenticationProvider"/>
+
+    <bean id="delegateLdapAuthenticationProvider" class="samltest.DelegateFilterAuthenticationProvider"
+          c:delegate-ref="ldapAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
+    <bean id="delegateSamlAuthenticationProvider" class="samltest.DelegateFilterAuthenticationProvider"
+          c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
+
     <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider ref="ldapAuthenticationProvider" />
-        <security:authentication-provider ref="samlAuthenticationProvider"/>
+        <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
+        <security:authentication-provider ref="delegateSamlAuthenticationProvider"/>
     </security:authentication-manager>
 
     <security:http disable-url-rewriting="true" use-expressions="true">
-        <security:form-login login-page="/login" login-processing-url="/ldap/login" username-parameter="username" password-parameter="password" authentication-failure-url="/login?error=true" />
-        <security:intercept-url pattern="/protected/**" access="isAuthenticated()" />
+        <security:form-login login-page="/login" login-processing-url="/ldap/login" username-parameter="username"
+                             password-parameter="password" authentication-failure-url="/login?error=true"/>
+        <security:intercept-url pattern="/protected/**" access="isAuthenticated()"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
         <!--<security:custom-filter ref="promptFilter" after="SECURITY_CONTEXT_FILTER" />-->
         <security:logout logout-url="/logout" logout-success-url="/login?logout=true"/>
         <security:anonymous/>
     </security:http>
 
-    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean">
-        <constructor-arg value="${dienst2.apitoken}" />
-    </bean>
+    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean" c:apiToken="${dienst2.apitoken}"/>
 
 </beans>
