@@ -49,7 +49,7 @@ dependencies {
     compile("com.fasterxml.jackson.core:jackson-annotations:2.4.1")
     compile("com.fasterxml.jackson.core:jackson-databind:2.4.1")
 
-    compile 'ch.wisv:dienst2-api-client-java:0.0.2-SNAPSHOT'
+    compile 'ch.wisv:dienst2-api-client-java:0.0.3-SNAPSHOT'
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }

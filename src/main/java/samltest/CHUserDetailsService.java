@@ -2,6 +2,7 @@ package samltest;
 
 import ch.wisv.dienst2.apiclient.model.Member;
 import ch.wisv.dienst2.apiclient.model.Person;
+import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

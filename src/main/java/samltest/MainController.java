@@ -23,8 +23,8 @@ public class MainController {
             CHUserDetails userDetails = (CHUserDetails) authentication.getPrincipal();
             Person person = userDetails.getPerson();
             Set<String> ldapGroups = userDetails.getLdapGroups();
-            return String.format("<pre>Authenticated\n\n%s\n\n%s %s %s\nLDAP Groups: %s", authentication.getName(), person
-                    .getFirstname(), person.getPreposition(), person.getSurname(), ldapGroups);
+            return String.format("<pre>Authenticated\n\n%s\n\n%s\nLDAP Groups: %s", authentication.getName(), person
+                    .getFormattedName(), ldapGroups);
         } else {
             return "<pre>Authenticated\n\n" + authentication.getName();
         }

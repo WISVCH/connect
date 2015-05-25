@@ -31,6 +31,8 @@
         <security:anonymous/>
     </security:http>
 
-    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean" c:apiToken="${dienst2.apitoken}"/>
-
+    <bean id="dienst2RestTemplate" class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean"
+          c:apiToken="${dienst2.apitoken}"/>
+    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2Repository" c:baseUrl="${dienst2.baseurl}"
+          c:restTemplate-ref="dienst2RestTemplate"/>
 </beans>
