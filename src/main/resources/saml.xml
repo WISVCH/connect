@@ -46,13 +46,6 @@
     </bean>
     -->
 
-    <!-- Handler deciding where to redirect user after failed login -->
-    <bean id="failureRedirectHandler"
-          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
-        <property name="useForward" value="true"/>
-        <property name="defaultFailureUrl" value="/error.jsp"/>
-    </bean>
-
     <!-- Handler for successful logout -->
     <bean id="successLogoutHandler"
           class="org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler">
@@ -160,7 +153,7 @@
     <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
         <property name="authenticationSuccessHandler" ref="successRedirectHandler"/>
-        <property name="authenticationFailureHandler" ref="failureRedirectHandler"/>
+        <property name="authenticationFailureHandler" ref="authenticationFailureHandler"/>
     </bean>
 
     <!-- Logout handler terminating local session -->
