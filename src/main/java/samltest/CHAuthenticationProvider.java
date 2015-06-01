@@ -34,17 +34,25 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
         if (credentials != null && credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
-            String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " + samlCredential
-                    .getAttributeAsString(n)).collect(Collectors.joining("; "));
-            log.info("Authenticated: " + authentication.getName() + " - " + attributesString);
+            if (log.isDebugEnabled()) {
+                String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " +
+                        samlCredential.getAttributeAsString(n)).collect(Collectors.joining("; "));
+                log.debug("Authenticated: " + authentication.getName() + " - " + attributesString);
+            }
 
-            String samlStudentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
-            UserDetails userDetails = userDetailService.loadUserByStudentNumber(samlStudentNumber);
+            String organization = samlCredential.getAttributeAsString("organization");
+            if (!"tudelft".equals(organization)) {
+                throw new IllegalArgumentException("Organization not supported");
+            }
+            String netid = samlCredential.getAttributeAsString("uid");
+            netid = netid.substring(0, netid.indexOf('@'));
+            String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
+            UserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
-            log.info("Authenticated: " + ldapUsername);
+            log.debug("Authenticated: " + ldapUsername);
 
             UserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
