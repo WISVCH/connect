@@ -10,6 +10,11 @@
             <div th:if="${param.error}" class="alert alert-error">
                 Error logging in.
                 <strong th:text="${exceptionMessage}">Content</strong>
+
+                <div th:if="${showCHMessage}" class="alert alert-error">
+                    <p>If you are a CH member, please <a href="https://ch.tudelft.nl/contact/board">contact the
+                        Board</a> to correct your information.</p>
+                </div>
             </div>
             <div th:if="${param.logout}" class="alert alert-success">
                 You have been logged out.

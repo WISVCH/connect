@@ -42,10 +42,15 @@ public class MainController {
         ModelMap model = new ModelMap();
         AuthenticationException exception = (AuthenticationException) request.getAttribute(WebAttributes
                 .AUTHENTICATION_EXCEPTION);
+        boolean showCHMessage = false;
         if (exception != null) {
             model.addAttribute("exceptionMessage", exception.getMessage());
             //session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
+            if (exception instanceof CHUserDetailsService.CHAuthenticationException) {
+                showCHMessage = true;
+            }
         }
+        model.addAttribute("showCHMessage", showCHMessage);
 
         return new ModelAndView("login", model);
     }
