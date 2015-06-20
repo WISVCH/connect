@@ -1,7 +1,9 @@
-package samltest;
+package ch.wisv.samltest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.opensaml.saml2.core.Attribute;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Controller;
@@ -13,23 +15,23 @@ import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
     @RequestMapping("/")
-    public String root(Authentication authentication) {
+    public String root() {
         return "index";
     }
 
     @RequestMapping("/protected")
     @ResponseBody
     public String protectedpage(Authentication authentication) throws JsonProcessingException {
-//        return authentication.getName() + " _ " + ((SAMLCredential) authentication.getCredentials())
-// .getAttributeAsString("tudStudentNumber");
-
         Object credentials = authentication.getCredentials();
         if (credentials != null && credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
             String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " + samlCredential
-                    .getAttributeAsString(n)).collect(Collectors.joining(",\n"));
+                    .getAttributeAsString(n)).collect(Collectors.joining("\n"));
+            log.debug("Authenticated user {} with attributes:\n{}", authentication.getName(), attributesString);
             return "<pre>Authenticated\n\n" + authentication.getName() + "\n\n" + attributesString;
         } else {
             return "<pre>Authenticated\n\n" + authentication.getName();

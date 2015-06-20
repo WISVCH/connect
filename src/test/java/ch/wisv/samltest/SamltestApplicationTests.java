@@ -1,4 +1,4 @@
-package samltest;
+package ch.wisv.samltest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
