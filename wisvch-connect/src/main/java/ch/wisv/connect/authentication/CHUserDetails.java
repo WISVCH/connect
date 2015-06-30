@@ -13,6 +13,8 @@ import java.util.Set;
  * CH User Details
  */
 public class CHUserDetails implements UserDetails {
+    public static final String USERNAME_PREFIX = "WISVCH.";
+
     private Person person;
     private Set<String> ldapGroups;
     private AuthenticationSource authenticationSource;
@@ -43,7 +45,7 @@ public class CHUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "WISVCH." + person.getId();
+        return USERNAME_PREFIX + person.getId();
     }
 
     @Override

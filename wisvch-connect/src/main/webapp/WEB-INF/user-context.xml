@@ -29,6 +29,8 @@
           class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
           c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
 
+    <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.authentication.CHUserInfoRepository"/>
+
     <!--
     <bean id="authenticationFailureHandler"
           class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
