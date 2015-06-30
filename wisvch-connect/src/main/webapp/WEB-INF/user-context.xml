@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <import resource="wisvch-ldap.xml"/>
+    <import resource="wisvch-saml.xml"/>
+
+    <context:property-placeholder location="file:${spring.config.location}"/>
+
+    <!-- ,classpath:application.properties-->
+
+    <bean id="chUserDetailsService" class="ch.wisv.connect.authentication.CHUserDetailsService"/>
+
+    <bean id="chAuthenticationProvider" class="ch.wisv.connect.authentication.CHAuthenticationProvider"/>
+
+    <bean id="delegateLdapAuthenticationProvider"
+          class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
+          c:delegate-ref="ldapAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
+    <bean id="delegateSamlAuthenticationProvider"
+          class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
+          c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
+
+    <!--
+    <bean id="authenticationFailureHandler"
+          class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+        <property name="exceptionMappings">
+            <map>
+                <entry key="samltest.CHUserDetailsService$CHMemberNotFoundException" value="/chmembererror"/>
+            </map>
+        </property>
+        <property name="defaultFailureUrl" value="/login?error=true"/>
+    </bean>
+    -->
+
+    <bean id="authenticationFailureHandler"
+          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"
+          c:defaultFailureUrl="/login?error=failure" p:useForward="true"/>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
+        <security:authentication-provider ref="delegateSamlAuthenticationProvider"/>
+    </security:authentication-manager>
+
+    <mvc:view-controller path="/login" view-name="login"/>
+
+    <security:http disable-url-rewriting="true" use-expressions="true">
+        <security:form-login login-page="/login" login-processing-url="/ldap/login" username-parameter="username"
+                             password-parameter="password"
+                             authentication-failure-handler-ref="authenticationFailureHandler"
+                             authentication-success-handler-ref="authenticationTimeStamper"
+                />
+        <security:intercept-url pattern="/**" access="permitAll"/>
+        <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
+        <!--<security:custom-filter ref="promptFilter" after="SECURITY_CONTEXT_FILTER" />-->
+        <security:logout logout-url="/logout"/>
+        <security:anonymous/>
+        <security:expression-handler ref="oauthWebExpressionHandler"/>
+    </security:http>
+
+    <bean id="dienst2RestTemplate" class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean"
+          c:apiToken="${dienst2.apitoken}"/>
+    <bean class="ch.wisv.dienst2.apiclient.util.Dienst2Repository" c:baseUrl="${dienst2.baseurl}"
+          c:restTemplate-ref="dienst2RestTemplate"/>
+</beans>

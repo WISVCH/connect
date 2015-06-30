@@ -25,9 +25,7 @@ public class CHAuthenticationToken extends ExpiringUsernameAuthenticationToken {
         } else {
             tokenExpiration = Date.from(Instant.now().plusSeconds(8L * 3600L));
         }
-        // We do not trust auxiliary granted authorities (i.e. LDAP groups while user is logged in via NetID)
-        Collection<? extends GrantedAuthority> authorities = originalAuthentication.getAuthorities();
-        return new CHAuthenticationToken(tokenExpiration, userDetails, authorities,
+        return new CHAuthenticationToken(tokenExpiration, userDetails, userDetails.getAuthorities(),
                 originalAuthentication);
     }
 

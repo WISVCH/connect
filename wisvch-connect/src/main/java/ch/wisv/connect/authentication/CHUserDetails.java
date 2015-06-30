@@ -1,7 +1,9 @@
 package ch.wisv.connect.authentication;
 
 import ch.wisv.dienst2.apiclient.model.Person;
+import com.google.common.collect.ImmutableSet;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -13,15 +15,25 @@ import java.util.Set;
 public class CHUserDetails implements UserDetails {
     private Person person;
     private Set<String> ldapGroups;
+    private AuthenticationSource authenticationSource;
 
-    public CHUserDetails(Person person, Set<String> ldapGroups) {
+    private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
+    private static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
+
+    public CHUserDetails(Person person, Set<String> ldapGroups, AuthenticationSource authenticationSource) {
         this.person = person;
         this.ldapGroups = ldapGroups;
+        this.authenticationSource = authenticationSource;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        // We do not fully trust TU Delft SSO, so we only grant admin authority if logged on through CH LDAP.
+        if (ldapGroups.contains("staff") && authenticationSource == AuthenticationSource.CH_LDAP) {
+            return ImmutableSet.of(ROLE_ADMIN, ROLE_USER);
+        } else {
+            return ImmutableSet.of(ROLE_USER);
+        }
     }
 
     @Override
@@ -60,5 +72,9 @@ public class CHUserDetails implements UserDetails {
 
     public Set<String> getLdapGroups() {
         return ldapGroups;
+    }
+
+    public enum AuthenticationSource {
+        CH_LDAP, TU_SSO
     }
 }
