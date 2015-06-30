@@ -121,6 +121,11 @@ public class CHUserDetailsService implements UserDetailsService {
         return new CHUserDetails(person, ldapGroups, authenticationSource);
     }
 
+    public CHUserDetails loadUserById(int id) throws CHAuthenticationException {
+        Person person = dienst2Repository.getPerson(id);
+        return createUserDetails(person, null);
+    }
+
     private Person verifyMembership(Optional<Person> person) {
         return person.filter(this::verifyMembership).orElseThrow(CHInvalidMemberException::new);
     }
