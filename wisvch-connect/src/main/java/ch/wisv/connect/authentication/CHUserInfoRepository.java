@@ -44,7 +44,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
 
         Matcher usernameMatcher = usernamePattern.matcher(username);
         if (!usernameMatcher.matches()) {
-            log.warn("Username did not match pattern");
+            log.debug("Username did not match pattern");
             return null;
         }
 

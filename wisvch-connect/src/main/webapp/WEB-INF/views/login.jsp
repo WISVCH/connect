@@ -17,7 +17,7 @@
 <o:topbar/>
 <div class="container-fluid main">
 
-    <h1><spring:message code="login.login_with_username_and_password"/></h1>
+    <h1>Login</h1>
 
     <c:if test="${ param.error != null }">
         <div class="alert alert-error"><spring:message code="login.error"/></div>
@@ -25,8 +25,10 @@
 
 
     <div class="row-fluid">
-        <div class="span6 offset1 well">
-            <form action="<%=request.getContextPath()%>/ldap/login" method="POST">
+        <div class="span6 well">
+            <h2>Login with CH Account</h2>
+
+            <form action="${pageContext.request.contextPath}/ldap/login" method="POST">
                 <div>
                     <div class="input-prepend input-block-level">
                         <span class="add-on"><i class="icon-user"></i></span>
@@ -46,6 +48,13 @@
                     <input type="submit" class="btn" value="Login" name="submit">
                 </div>
             </form>
+        </div>
+
+        <div class="span6 well">
+            <h2>Log in with TU Delft NetID</h2>
+
+            <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">Login with TU Delft
+                NetID</a></div>
         </div>
     </div>
 </div>
