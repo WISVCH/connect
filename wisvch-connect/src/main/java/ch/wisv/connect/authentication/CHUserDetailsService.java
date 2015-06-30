@@ -45,7 +45,7 @@ public class CHUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws CHAuthenticationException {
         Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
-        return createUserDetails(person);
+        return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
     }
 
     /**
@@ -77,7 +77,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 }
             }
             // Student number parameter was blank, or it matched Dienst2 student number: we're good
-            return createUserDetails(person);
+            return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
         } else if (StringUtils.isBlank(studentNumber)) {
             // No match, and we cannot search by student number: invalid member
             throw new CHInvalidMemberException();
@@ -90,14 +90,14 @@ public class CHUserDetailsService implements UserDetailsService {
             throw new CHMemberConflictException();
         } else if (personFromNetid.isPresent()) {
             // No match by student number, so NetID result was fine: we're good
-            return createUserDetails(verifyMembership(personFromNetid));
+            return createUserDetails(verifyMembership(personFromNetid), CHUserDetails.AuthenticationSource.TU_SSO);
         } else if (personFromStudentNumber.isPresent()) {
             Person person = verifyMembership(personFromStudentNumber);
             // If Dienst2 parameter is set, it should have matched earlier: conflict
             if (StringUtils.isNotBlank(person.getNetid())) {
                 throw new CHMemberConflictException();
             } else {
-                return createUserDetails(person);
+                return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else {
             // No matches: invalid member
@@ -105,7 +105,7 @@ public class CHUserDetailsService implements UserDetailsService {
         }
     }
 
-    private CHUserDetails createUserDetails(Person person) {
+    private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
         assert person != null;
         // TODO: externalise search options
         String ldapUsername = person.getLdapUsername();
@@ -118,7 +118,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 log.debug("LDAP roles from search: " + ldapGroups);
             }
         }
-        return new CHUserDetails(person, ldapGroups);
+        return new CHUserDetails(person, ldapGroups, authenticationSource);
     }
 
     private Person verifyMembership(Optional<Person> person) {
