@@ -22,6 +22,4 @@
         <property name="base" value="dc=ank,dc=chnet"/>
         <property name="pooled" value="false"/>
     </bean>
-
-    <!-- /Users/mark/wisvch.truststore-->
 </beans>
