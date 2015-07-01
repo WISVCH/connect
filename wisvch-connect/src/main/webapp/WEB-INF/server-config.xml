@@ -2,34 +2,23 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
-    <beans profile="!production">
-        <bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
-            <!-- This property sets the root URL of the server, known as the issuer -->
-            <property name="issuer" value="http://localhost:8080/"/>
+    <bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
+        <!-- This property sets the root URL of the server, known as the issuer -->
+        <property name="issuer" value="${server.issuer}"/>
 
-            <!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
-            <property name="logoImageUrl" value="resources/images/openid_connect_small.png"/>
+        <!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
+        <property name="logoImageUrl" value="resources/images/openid_connect_small.png"/>
 
-            <!-- This property sets the display name of the server, displayed in the topbar and page title -->
-            <property name="topbarTitle" value="CH Connect"/>
+        <!-- This property sets the display name of the server, displayed in the topbar and page title -->
+        <property name="topbarTitle" value="CH Connect"/>
 
-            <!-- This property sets the lifetime of registration access tokens, in seconds. Leave it unset (null) for no rotation. -->
-            <!-- <property name="regTokenLifeTime" value="172800" /> -->
+        <!-- This property sets the lifetime of registration access tokens, in seconds. Leave it unset (null) for no rotation. -->
+        <!-- <property name="regTokenLifeTime" value="172800" /> -->
 
-            <!-- This property forces the issuer value to start with "https" -->
-            <property name="forceHttps" value="false"/>
+        <!-- This property forces the issuer value to start with "https" -->
+        <property name="forceHttps" value="${server.force_https}"/>
 
-            <!-- This property sets the locale for server text -->
-            <property name="locale" value="wisvch"/>
-        </bean>
-    </beans>
-    <beans profile="production">
-        <bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
-            <property name="issuer" value="https://connect.ch.tudelft.nl/"/>
-            <property name="logoImageUrl" value="resources/images/openid_connect_small.png"/>
-            <property name="topbarTitle" value="CH Connect"/>
-            <property name="forceHttps" value="true"/>
-            <property name="locale" value="wisvch"/>
-        </bean>
-    </beans>
+        <!-- This property sets the locale for server text -->
+        <property name="locale" value="wisvch"/>
+    </bean>
 </beans>
