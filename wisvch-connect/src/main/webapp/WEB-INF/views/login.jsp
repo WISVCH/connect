@@ -20,9 +20,22 @@
     <h1>Login</h1>
 
     <c:if test="${ param.error != null }">
-        <div class="alert alert-error"><spring:message code="login.error"/></div>
+        <div class="alert alert-error">
+            <c:choose>
+                <c:when test="${ param.chMemberError == 'conflict'}">
+                    Your CH membership record contains conflicting information. Please <a
+                        href="https://ch.tudelft.nl/contact/board">contact the board</a> to have this corrected.
+                </c:when>
+                <c:when test="${ param.chMemberError == 'invalid'}">
+                    We could not find a current CH membership record. If you are a CH member, please <a
+                        href="https://ch.tudelft.nl/contact/board">contact the board</a>.
+                </c:when>
+                <c:otherwise>
+                    <spring:message code="login.error"/>
+                </c:otherwise>
+            </c:choose>
+        </div>
     </c:if>
-
 
     <div class="row-fluid">
         <div class="span6 well">
