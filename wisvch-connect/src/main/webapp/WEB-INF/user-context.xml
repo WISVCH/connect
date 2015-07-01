@@ -3,7 +3,6 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:c="http://www.springframework.org/schema/c"
-       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
@@ -15,8 +14,6 @@
     <import resource="wisvch-saml.xml"/>
 
     <context:property-placeholder location="file:${spring.config.location}"/>
-
-    <!-- ,classpath:application.properties-->
 
     <bean id="chUserDetailsService" class="ch.wisv.connect.authentication.CHUserDetailsService"/>
 
@@ -31,21 +28,19 @@
 
     <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.authentication.CHUserInfoRepository"/>
 
-    <!--
     <bean id="authenticationFailureHandler"
-          class="org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler">
+          class="ch.wisv.connect.authentication.ExceptionMappingAuthenticationFailureHandler">
         <property name="exceptionMappings">
             <map>
-                <entry key="samltest.CHUserDetailsService$CHMemberNotFoundException" value="/chmembererror"/>
+                <entry key="ch.wisv.connect.authentication.CHUserDetailsService$CHInvalidMemberException"
+                       value="/login?error=failure&amp;chMemberError=invalid"/>
+                <entry key="ch.wisv.connect.authentication.CHUserDetailsService$CHMemberConflictException"
+                       value="/login?error=failure&amp;chMemberError=conflict"/>
             </map>
         </property>
-        <property name="defaultFailureUrl" value="/login?error=true"/>
+        <property name="defaultFailureUrl" value="/login?error=failure"/>
+        <property name="useForward" value="true"/>
     </bean>
-    -->
-
-    <bean id="authenticationFailureHandler"
-          class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler"
-          c:defaultFailureUrl="/login?error=failure" p:useForward="true"/>
 
     <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
