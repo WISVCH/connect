@@ -88,13 +88,7 @@
         <dependency>
             <groupId>ch.wisv</groupId>
             <artifactId>dienst2-api-client-java</artifactId>
-            <version>0.0.4</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>0.0.5</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
