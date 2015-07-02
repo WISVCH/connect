@@ -40,11 +40,11 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                 log.debug("Authenticated: " + authentication.getName() + " - " + attributesString);
             }
 
-            String organization = samlCredential.getAttributeAsString("organization");
-            if (!"tudelft".equals(organization)) {
-                throw new IllegalArgumentException("Organization not supported");
+            String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
+            if (!"student".equals(affiliation)) {
+                throw new IllegalArgumentException("Affiliation not supported");
             }
-            String netid = samlCredential.getAttributeAsString("uid");
+            String netid = authentication.getName();
             netid = netid.substring(0, netid.indexOf('@'));
             String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
             UserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
