@@ -122,7 +122,7 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     public CHUserDetails loadUserById(int id) throws CHAuthenticationException {
-        Person person = dienst2Repository.getPerson(id);
+        Person person = verifyMembership(dienst2Repository.getPerson(id));
         return createUserDetails(person, null);
     }
 
