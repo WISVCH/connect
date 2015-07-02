@@ -18,10 +18,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+                           http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
 
     <!-- Enable auto-wiring -->
     <context:annotation-config/>
@@ -142,9 +141,6 @@
     <!-- SAML Authentication Provider responsible for validating of received SAML messages -->
     <bean id="samlAuthenticationProvider" class="org.springframework.security.saml.SAMLAuthenticationProvider"/>
 
-    <!-- Provider of default SAML Context -->
-    <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl"/>
-
     <!-- Processing filter for WebSSO profile messages -->
     <bean id="samlWebSSOProcessingFilter" class="org.springframework.security.saml.SAMLProcessingFilter">
         <property name="authenticationManager" ref="authenticationManager"/>
@@ -226,4 +222,18 @@
     </bean>
 
     <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
+
+    <!-- Provider of default SAML Context -->
+    <beans profile="!production">
+        <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderImpl"/>
+    </beans>
+    <beans profile="production">
+        <bean id="contextProvider" class="org.springframework.security.saml.context.SAMLContextProviderLB">
+            <property name="scheme" value="${saml.lb_scheme}"/>
+            <property name="serverName" value="${saml.lb_server_name}"/>
+            <property name="serverPort" value="${saml.lb_server_port}"/>
+            <property name="includeServerPortInRequestURL" value="false"/>
+            <property name="contextPath" value="${saml.lb_context_path}"/>
+        </bean>
+    </beans>
 </beans>
