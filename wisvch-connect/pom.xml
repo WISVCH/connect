@@ -4,7 +4,7 @@
     <parent>
         <artifactId>wisvch-connect-overlay</artifactId>
         <groupId>ch.wisv</groupId>
-        <version>1.2.0</version>
+        <version>1.2.0.0</version>
         <relativePath>..</relativePath>
     </parent>
     <artifactId>wisvch-connect</artifactId>
