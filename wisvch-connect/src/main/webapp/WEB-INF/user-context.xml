@@ -71,6 +71,7 @@
                              password-parameter="password"
                              authentication-failure-handler-ref="authenticationFailureHandler"
                              authentication-success-handler-ref="authenticationTimeStamper"/>
+        <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
         <security:intercept-url pattern="/**" access="permitAll"/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/logout"/>
