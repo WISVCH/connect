@@ -1,5 +1,16 @@
 # WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)](https://travis-ci.org/WISVCH/connect)
-OpenID Connect for W.I.S.V. 'Christiaan Huygens'
+
+[OpenID Connect](http://openid.net/connect/) for W.I.S.V. 'Christiaan Huygens'.
+
+OpenID Connect (OIDC) lets you log into a remote site or application using your identity without exposing your
+credentials. In addition, OIDC can provide this application with additional user information like full name or phone
+number. For W.I.S.V. 'Christiaan Huygens', this OIDC implementation is configured to allow login through NetID and CH
+Accounts (LDAP). Both login methods are linked to the [Dienst2](https://github.com/WISVCH/dienst2) member administration
+to verify identity. Dienst2 is also the source of any additional user information.
+
+This code is hosted for production use at [connect.ch.tudelft.nl](https://connect.ch.tudelft.nl/). Developers can
+register their own applications by logging in there. For a sample implementation, take a look at the [MITREid Connect
+simple-web-app](https://github.com/mitreid-connect/simple-web-app). 
 
 ## Development
 
