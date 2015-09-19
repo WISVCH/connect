@@ -86,11 +86,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.opensaml</groupId>
-            <artifactId>opensaml</artifactId>
-            <version>2.6.4</version>
-        </dependency>
-        <dependency>
             <groupId>ch.wisv</groupId>
             <artifactId>dienst2-api-client-java</artifactId>
             <version>0.0.5</version>
