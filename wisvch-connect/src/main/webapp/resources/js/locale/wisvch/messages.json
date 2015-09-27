@@ -5,7 +5,7 @@
   "contact": {
     "body": "To report bugs with the WISVCH Connect software itself, use the \n<a href=\"https://github.com/WISVCH/connect/issues\">GitHub issue tracker</a>. \nFor problems relating to this server, contact <a href=\"mailto:beheer@ch.tudelft.nl?Subject=CH Connect\">CH Beheer</a>."
   },
-  "copyright": "Powered by <a href=\"https://github.com/WISVCH/connect/\">WISVCH Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 W.I.S.V. 'Christiaan Huygens</span>",
+  "copyright": "Powered by <a href=\"https://github.com/WISVCH/connect/\">WISVCH Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 W.I.S.V. ''Christiaan Huygens''</span>",
   "home": {
     "welcome": {
       "title": "Welcome!",
