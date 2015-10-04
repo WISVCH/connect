@@ -4,6 +4,7 @@ import ch.wisv.dienst2.apiclient.model.Person;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.mitre.openid.connect.model.Address;
+import org.mitre.openid.connect.model.DefaultAddress;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
@@ -71,7 +72,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
         ui.setName(person.getFormattedName());
         ui.setGivenName(person.getFirstname());
         ui.setFamilyName(person.getSurname());
-        Address address = new Address();
+        Address address = new DefaultAddress();
         address.setStreetAddress(person.getStreetAddress());
         address.setPostalCode(person.getPostcode());
         address.setLocality(person.getCity());
