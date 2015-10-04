@@ -80,6 +80,7 @@
         <security:headers>
             <security:frame-options policy="DENY"/>
         </security:headers>
+        <security:csrf />
     </security:http>
 
     <bean id="dienst2RestTemplate" class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean"
