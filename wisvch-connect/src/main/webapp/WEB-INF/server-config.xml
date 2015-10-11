@@ -36,6 +36,6 @@
         <property name="forceHttps" value="${server.force_https}"/>
 
         <!-- This property sets the locale for server text -->
-        <property name="locale" value="wisvch"/>
+        <property name="locale" value="en"/>
     </bean>
 </beans>

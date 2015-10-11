@@ -15,7 +15,7 @@ simple-web-app](https://github.com/mitreid-connect/simple-web-app).
 ## Development
 
 This project is a WAR overlay for [MITREid Connect](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server)
-version 1.2.0 (the current stable version), which is included from Maven Central.
+version 1.2.1 (the current stable version), which is included from Maven Central.
 
 Configuration is done through a properties file; refer to `config/application-example.properties` and make a copy as
 `config/application.properties`. An HSQLDB instance will be launched with demo data; to log in, use `admin:password`.
