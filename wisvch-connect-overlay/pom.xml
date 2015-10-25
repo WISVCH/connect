@@ -4,7 +4,7 @@
     <parent>
         <artifactId>wisvch-connect-parent</artifactId>
         <groupId>ch.wisv</groupId>
-        <version>1.2.2.1</version>
+        <version>1.2.2.2-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>ch.wisv</groupId>
             <artifactId>wisvch-connect-common</artifactId>
-            <version>1.2.2.1</version>
+            <version>1.2.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mitre</groupId>
