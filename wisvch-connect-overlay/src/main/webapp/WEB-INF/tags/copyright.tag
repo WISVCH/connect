@@ -1,2 +1,2 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<spring:message code="copyright" arguments="1.2.2.1-SNAPSHOT"/>
+<spring:message code="copyright" arguments="${project.version}"/>
