@@ -1,4 +1,4 @@
-package ch.wisv.connect.overlay.authentication;
+package ch.wisv.connect.overlay.model;
 
 import ch.wisv.dienst2.apiclient.model.Person;
 import com.google.common.collect.ImmutableSet;

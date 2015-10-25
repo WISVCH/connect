@@ -1,5 +1,6 @@
 package ch.wisv.connect.overlay.authentication;
 
+import ch.wisv.connect.overlay.services.CHUserDetailsService;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
