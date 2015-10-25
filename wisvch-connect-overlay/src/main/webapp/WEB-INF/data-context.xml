@@ -32,7 +32,8 @@
             <property name="dataSourceClassName" value="org.hsqldb.jdbc.JDBCDataSource"/>
             <property name="dataSourceProperties">
                 <props>
-                    <prop key="url">file:/tmp/oic</prop>
+                    <prop key="url">jdbc:hsqldb:mem:oic</prop>
+                    <!--< prop key="url">file:/tmp/oic</prop> -->
                 </props>
             </property>
         </bean>
