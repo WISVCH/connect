@@ -1,4 +1,4 @@
-package ch.wisv.connect.authentication;
+package ch.wisv.connect.overlay.authentication;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
