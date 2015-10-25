@@ -1,0 +1,4 @@
+/* User Profile alignment */
+.dl-horizontal dd, .dl-horizontal dt {
+    height: 20px;
+}
