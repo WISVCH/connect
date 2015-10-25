@@ -1,4 +1,4 @@
-# WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)](https://travis-ci.org/WISVCH/connect)
+# WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)](https://travis-ci.org/WISVCH/connect) [![Download](https://api.bintray.com/packages/wisvch/maven/wisvch-connect/images/download.svg)](https://bintray.com/wisvch/maven/wisvch-connect/_latestVersion)
 
 [OpenID Connect](http://openid.net/connect/) for W.I.S.V. 'Christiaan Huygens'.
 
