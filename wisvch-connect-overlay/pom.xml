@@ -24,7 +24,28 @@
                             <artifactId>openid-connect-server-webapp</artifactId>
                         </overlay>
                     </overlays>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/*.tag</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>false</filtering>
+                            <excludes>
+                                <exclude>**/*.tag</exclude>
+                            </excludes>
+                        </resource>
+                    </webResources>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.3.5.v20151012</version>
             </plugin>
         </plugins>
     </build>
