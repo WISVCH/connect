@@ -1,11 +1,13 @@
-package ch.wisv.connect.overlay.authentication;
+package ch.wisv.connect.overlay.services;
 
+import ch.wisv.connect.common.model.CHUserInfo;
+import ch.wisv.connect.overlay.model.CHUserDetails;
 import ch.wisv.dienst2.apiclient.model.Person;
+import ch.wisv.dienst2.apiclient.model.Student;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.mitre.openid.connect.model.Address;
 import org.mitre.openid.connect.model.DefaultAddress;
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.slf4j.Logger;
@@ -63,7 +65,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
     private static UserInfo mapUserDetailsToUserInfo(CHUserDetails userDetails) {
         // TODO: Extend user details with ldap username, ldap groups, netid, student number, etc.
         Person person = userDetails.getPerson();
-        UserInfo ui = new DefaultUserInfo();
+        CHUserInfo ui = new CHUserInfo();
         ui.setSub(userDetails.getUsername());
         String preferredUsername = StringUtils.isNotBlank(person.getLdapUsername()) ? person.getLdapUsername() :
                 person.getNetid();
@@ -89,6 +91,10 @@ public class CHUserInfoRepository implements UserInfoRepository {
                 break;
         }
         ui.setPhoneNumber(person.getPhoneMobile());
+        ui.setLdapUsername(person.getLdapUsername());
+        ui.setLdapGroups(userDetails.getLdapGroups());
+        ui.setNetid(person.getNetid());
+        ui.setStudentNumber(person.getStudent().map(Student::getStudentNumber).orElse(null));
         return ui;
     }
 }

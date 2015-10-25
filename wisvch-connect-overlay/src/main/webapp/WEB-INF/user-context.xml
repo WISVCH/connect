@@ -32,7 +32,7 @@
 
     <context:property-placeholder location="file:${spring.config.location}"/>
 
-    <bean id="chUserDetailsService" class="ch.wisv.connect.overlay.authentication.CHUserDetailsService"/>
+    <bean id="chUserDetailsService" class="ch.wisv.connect.overlay.services.CHUserDetailsService"/>
 
     <bean id="chAuthenticationProvider" class="ch.wisv.connect.overlay.authentication.CHAuthenticationProvider"/>
 
@@ -43,15 +43,18 @@
           class="ch.wisv.connect.overlay.authentication.DelegateFilterAuthenticationProvider"
           c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
 
-    <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.overlay.authentication.CHUserInfoRepository"/>
+    <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.overlay.services.CHUserInfoRepository"/>
+
+    <bean id="chScopeClaimTranslationService" primary="true"
+          class="ch.wisv.connect.overlay.services.CHScopeClaimTranslationService"/>
 
     <bean id="authenticationFailureHandler"
           class="ch.wisv.connect.overlay.authentication.ExceptionMappingAuthenticationFailureHandler">
         <property name="exceptionMappings">
             <map>
-                <entry key="ch.wisv.connect.overlay.authentication.CHUserDetailsService$CHInvalidMemberException"
+                <entry key="ch.wisv.connect.overlay.services.CHUserDetailsService$CHInvalidMemberException"
                        value="/login?error=failure&amp;chMemberError=invalid"/>
-                <entry key="ch.wisv.connect.overlay.authentication.CHUserDetailsService$CHMemberConflictException"
+                <entry key="ch.wisv.connect.overlay.services.CHUserDetailsService$CHMemberConflictException"
                        value="/login?error=failure&amp;chMemberError=conflict"/>
             </map>
         </property>
@@ -71,7 +74,7 @@
                              password-parameter="password"
                              authentication-failure-handler-ref="authenticationFailureHandler"
                              authentication-success-handler-ref="authenticationTimeStamper"/>
-        <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
+        <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/logout"/>
@@ -80,7 +83,7 @@
         <security:headers>
             <security:frame-options policy="DENY"/>
         </security:headers>
-        <security:csrf />
+        <security:csrf/>
     </security:http>
 
     <bean id="dienst2RestTemplate" class="ch.wisv.dienst2.apiclient.util.Dienst2RestTemplateFactoryBean"

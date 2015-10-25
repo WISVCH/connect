@@ -1,5 +1,6 @@
-package ch.wisv.connect.overlay.authentication;
+package ch.wisv.connect.overlay.services;
 
+import ch.wisv.connect.overlay.model.CHUserDetails;
 import ch.wisv.dienst2.apiclient.model.Member;
 import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
