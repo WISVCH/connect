@@ -1,4 +1,4 @@
-package ch.wisv.connect.authentication;
+package ch.wisv.connect.overlay.authentication;
 
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;

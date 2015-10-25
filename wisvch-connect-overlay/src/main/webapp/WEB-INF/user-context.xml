@@ -32,26 +32,26 @@
 
     <context:property-placeholder location="file:${spring.config.location}"/>
 
-    <bean id="chUserDetailsService" class="ch.wisv.connect.authentication.CHUserDetailsService"/>
+    <bean id="chUserDetailsService" class="ch.wisv.connect.overlay.authentication.CHUserDetailsService"/>
 
-    <bean id="chAuthenticationProvider" class="ch.wisv.connect.authentication.CHAuthenticationProvider"/>
+    <bean id="chAuthenticationProvider" class="ch.wisv.connect.overlay.authentication.CHAuthenticationProvider"/>
 
     <bean id="delegateLdapAuthenticationProvider"
-          class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
+          class="ch.wisv.connect.overlay.authentication.DelegateFilterAuthenticationProvider"
           c:delegate-ref="ldapAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
     <bean id="delegateSamlAuthenticationProvider"
-          class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
+          class="ch.wisv.connect.overlay.authentication.DelegateFilterAuthenticationProvider"
           c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
 
-    <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.authentication.CHUserInfoRepository"/>
+    <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.overlay.authentication.CHUserInfoRepository"/>
 
     <bean id="authenticationFailureHandler"
-          class="ch.wisv.connect.authentication.ExceptionMappingAuthenticationFailureHandler">
+          class="ch.wisv.connect.overlay.authentication.ExceptionMappingAuthenticationFailureHandler">
         <property name="exceptionMappings">
             <map>
-                <entry key="ch.wisv.connect.authentication.CHUserDetailsService$CHInvalidMemberException"
+                <entry key="ch.wisv.connect.overlay.authentication.CHUserDetailsService$CHInvalidMemberException"
                        value="/login?error=failure&amp;chMemberError=invalid"/>
-                <entry key="ch.wisv.connect.authentication.CHUserDetailsService$CHMemberConflictException"
+                <entry key="ch.wisv.connect.overlay.authentication.CHUserDetailsService$CHMemberConflictException"
                        value="/login?error=failure&amp;chMemberError=conflict"/>
             </map>
         </property>
