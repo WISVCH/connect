@@ -1,7 +1,6 @@
 package ch.wisv.connect.common.model;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import org.mitre.openid.connect.model.DefaultUserInfo;
@@ -22,7 +21,7 @@ public class CHUserInfo extends DefaultUserInfo {
 
     private transient JsonObject src;
 
-    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Gson gson = new Gson();
     private final static Type stringSetType = new TypeToken<Set<String>>() {
     }.getType();
 
@@ -77,24 +76,43 @@ public class CHUserInfo extends DefaultUserInfo {
             obj.addProperty("netid", this.getNetid());
             obj.addProperty("student_number", this.getStudentNumber());
             obj.addProperty("ldap_username", this.getLdapUsername());
-            obj.addProperty("ldap_groups", gson.toJson(ldapGroups));
+            obj.add("ldap_groups", gson.toJsonTree(ldapGroups));
 
             return obj;
         } else {
             return src;
         }
-
     }
 
     public static UserInfo fromJson(JsonObject obj) {
-        CHUserInfo ui = (CHUserInfo) DefaultUserInfo.fromJson(obj);
+        CHUserInfo ui = new CHUserInfo();
 
         ui.setSource(obj);
+
+        UserInfo dui = DefaultUserInfo.fromJson(obj);
+        ui.setSub(dui.getSub());
+        ui.setName(dui.getName());
+        ui.setPreferredUsername(dui.getPreferredUsername());
+        ui.setGivenName(dui.getGivenName());
+        ui.setFamilyName(dui.getFamilyName());
+        ui.setMiddleName(dui.getMiddleName());
+        ui.setNickname(dui.getNickname());
+        ui.setProfile(dui.getProfile());
+        ui.setPicture(dui.getPicture());
+        ui.setWebsite(dui.getWebsite());
+        ui.setGender(dui.getGender());
+        ui.setZoneinfo(dui.getZoneinfo());
+        ui.setLocale(dui.getLocale());
+        ui.setUpdatedTime(dui.getUpdatedTime());
+        ui.setBirthdate(dui.getBirthdate());
+        ui.setEmail(dui.getEmail());
+        ui.setEmailVerified(dui.getEmailVerified());
+        ui.setAddress(dui.getAddress());
 
         ui.setNetid(nullSafeGetString(obj, "netid"));
         ui.setStudentNumber(nullSafeGetString(obj, "student_number"));
         ui.setLdapUsername(nullSafeGetString(obj, "ldap_username"));
-        ui.setLdapGroups(gson.<Set<String>>fromJson(obj.getAsJsonArray("ldap_groups"), stringSetType));
+        ui.setLdapGroups(gson.<Set<String>>fromJson(obj.get("ldap_groups"), stringSetType));
 
         return ui;
     }
