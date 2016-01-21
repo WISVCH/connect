@@ -63,7 +63,6 @@ public class CHUserInfoRepository implements UserInfoRepository {
     }
 
     private static UserInfo mapUserDetailsToUserInfo(CHUserDetails userDetails) {
-        // TODO: Extend user details with ldap username, ldap groups, netid, student number, etc.
         Person person = userDetails.getPerson();
         CHUserInfo ui = new CHUserInfo();
         ui.setSub(userDetails.getUsername());
