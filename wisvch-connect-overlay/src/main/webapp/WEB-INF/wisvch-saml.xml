@@ -213,13 +213,7 @@
           factory-method="getEngine"/>
 
     <!-- XML parser pool needed for OpenSAML parsing -->
-    <bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" init-method="initialize">
-        <property name="builderFeatures">
-            <map>
-                <entry key="http://apache.org/xml/features/dom/defer-node-expansion" value="false"/>
-            </map>
-        </property>
-    </bean>
+    <bean id="parserPool" class="org.opensaml.xml.parse.StaticBasicParserPool" init-method="initialize"/>
 
     <bean id="parserPoolHolder" class="org.springframework.security.saml.parser.ParserPoolHolder"/>
 
