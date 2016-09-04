@@ -74,9 +74,4 @@ public class CHScopeClaimTranslationService implements ScopeClaimTranslationServ
         return result;
     }
 
-    @Override
-    public String getFieldNameForClaim(String claim) {
-        throw new UnsupportedOperationException();
-    }
-
 }
