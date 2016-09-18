@@ -33,7 +33,6 @@ The servlet container can be configured with the following parameters:
 Configure the location of the properties file with `-Dspring.config.location=/path/to/config/application.properties` as
 a JVM parameter. Spring profile `production` is used in production; to enable, add `-Dspring.profiles.active=production`
 as a JVM parameter.
-
 ## Releases
 
 Releases can be found on [our Bintray repository][4].
@@ -41,6 +40,13 @@ Releases can be found on [our Bintray repository][4].
 New releases can be made with a two-step process: `mvn release:prepare` increases the version number and creates a Git
 tag, a subsequent `mvn release:perform` will build the tagged version and upload it to Bintray.
 
+## Docker
+
+Building:
+```bash
+mvn clean package
+docker build .
+```
 
 [1]: http://openid.net/connect/ "OpenID Connect"
 [2]: https://github.com/WISVCH/dienst2 "Dienst2"
