@@ -45,8 +45,13 @@ public class CHUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws CHAuthenticationException {
-        Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
-        return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
+        try {
+            Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
+            return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
+        } catch (Exception e) {
+            log.error("Could not load user details by username", e);
+            throw e;
+        }
     }
 
     /**
