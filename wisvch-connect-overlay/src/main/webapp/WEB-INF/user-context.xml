@@ -90,4 +90,6 @@
           c:apiToken="${dienst2.apitoken}"/>
     <bean class="ch.wisv.dienst2.apiclient.util.Dienst2Repository" c:baseUrl="${dienst2.baseurl}"
           c:restTemplate-ref="dienst2RestTemplate"/>
+
+    <bean id="discoveryEndpointOverride" class="ch.wisv.connect.overlay.web.DiscoveryEndpointOverride"/>
 </beans>
