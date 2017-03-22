@@ -33,9 +33,8 @@ public class DiscoveryEndpointOverride {
     @RequestMapping(value = "/" + OPENID_CONFIGURATION_URL, method = RequestMethod.GET)
     public String providerConfiguration(Model model) {
         String ret = discoveryEndpoint.providerConfiguration(model);
-        logger.info("debug: .well-known");
         Map<String, Object> entity = (Map<String, Object>) model.asMap().get(JsonEntityView.ENTITY);
-        ((Collection) entity.get("id_token_signing_alg_values_supported")).remove("none");
+        ((Collection) entity.get("token_endpoint_auth_methods_supported")).remove("none");
         return ret;
     }
 
