@@ -38,7 +38,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             if (log.isDebugEnabled()) {
                 String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " +
                         samlCredential.getAttributeAsString(n)).collect(Collectors.joining("; "));
-                log.debug("Authenticated: " + authentication.getName() + " - " + attributesString);
+                log.debug("Authenticated via SAML: {} - {}", authentication.getName(), attributesString);
             }
 
             String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
@@ -53,7 +53,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
-            log.debug("Authenticated: " + ldapUsername);
+            log.debug("Authenticated via LDAP: {}", ldapUsername);
 
             UserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
