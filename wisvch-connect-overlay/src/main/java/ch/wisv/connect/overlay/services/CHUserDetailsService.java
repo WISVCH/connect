@@ -5,6 +5,7 @@ import ch.wisv.dienst2.apiclient.model.Member;
 import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
 import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,40 +70,44 @@ public class CHUserDetailsService implements UserDetailsService {
      */
     public UserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
             CHAuthenticationException {
-        assert StringUtils.isNotBlank(netid);
+        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
 
-        // First look up by NetID
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
-        if (personFromNetid.isPresent()) {
-            Person person = verifyMembership(personFromNetid);
-            if (StringUtils.isNotBlank(studentNumber)) {
-                // Check if Dienst2 student number matches parameter, if not: conflict
-                String matchedStudentNumber = person.getStudent().map(Student::getStudentNumber).orElse("");
-                if (StringUtils.isBlank(matchedStudentNumber) || !studentNumber.equals(matchedStudentNumber)) {
-                    throw new CHMemberConflictException();
-                }
-            }
-            // Student number parameter was blank, or it matched Dienst2 student number: we're good
-            return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
-        } else if (StringUtils.isBlank(studentNumber)) {
-            // No match, and we cannot search by student number: invalid member
-            throw new CHInvalidMemberException();
-        }
+        Optional<Person> personFromStudentNumber = StringUtils.isBlank(studentNumber) ?
+                dienst2Repository.getPersonFromStudentNumber(studentNumber) : Optional.empty();
 
-        // Person not found by NetID, or Dienst2 student number was empty: we need to check for conflicts
-        Optional<Person> personFromStudentNumber = dienst2Repository.getPersonFromStudentNumber(studentNumber);
-        if (personFromStudentNumber.isPresent() && personFromNetid.isPresent()) {
-            // We found two different matches: conflict
-            throw new CHMemberConflictException();
-        } else if (personFromNetid.isPresent()) {
-            // No match by student number, so NetID result was fine: we're good
-            return createUserDetails(verifyMembership(personFromNetid), CHUserDetails.AuthenticationSource.TU_SSO);
-        } else if (personFromStudentNumber.isPresent()) {
-            Person person = verifyMembership(personFromStudentNumber);
-            // If Dienst2 parameter is set, it should have matched earlier: conflict
-            if (StringUtils.isNotBlank(person.getNetid())) {
+        if (personFromNetid.isPresent() && personFromStudentNumber.isPresent()) {
+            Person person = verifyMembership(personFromNetid);
+            if (personFromStudentNumber.get().getId() != personFromNetid.get().getId()) {
+                // We have two different matches: conflict
+                log.warn("Conflict: Dienst2 person {} matching student number is not Dienst2 person {} matching NetID",
+                        personFromStudentNumber.get().getId(), personFromNetid.get().getId());
                 throw new CHMemberConflictException();
             } else {
+                return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
+            }
+        } else if (personFromNetid.isPresent()) {
+            Person person = verifyMembership(personFromNetid);
+            String dienst2StudentNumber = person.getStudent().map(Student::getStudentNumber).orElse("");
+            if (StringUtils.isNotBlank(dienst2StudentNumber)) {
+                // If Dienst2 student number is set, it should have matched earlier: conflict
+                log.warn("Conflict: Student number {} from Dienst2 does not match student number {} from SAML",
+                        dienst2StudentNumber, studentNumber);
+                throw new CHMemberConflictException();
+            } else {
+                // TODO: write back student number to Dienst2
+                return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
+            }
+        } else if (personFromStudentNumber.isPresent()) {
+            Person person = verifyMembership(personFromStudentNumber);
+            String dienst2Netid = person.getNetid();
+            if (StringUtils.isNotBlank(dienst2Netid)) {
+                // If Dienst2 NetID is set, it should have matched earlier: conflict
+                log.warn("Conflict: NetID {} from Dienst2 does not match NetID {} from SAML",
+                        dienst2Netid, netid);
+                throw new CHMemberConflictException();
+            } else {
+                // TODO: write back NetID to Dienst2
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else {
@@ -120,9 +125,7 @@ public class CHUserDetailsService implements UserDetailsService {
             String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
             ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}", new String[]{dn,
                     ldapUsername}, "cn");
-            if (log.isDebugEnabled()) {
-                log.debug("LDAP roles from search: " + ldapGroups);
-            }
+            log.debug("LDAP roles from search: {}", ldapGroups);
         }
         return new CHUserDetails(person, ldapGroups, authenticationSource);
     }
@@ -140,20 +143,20 @@ public class CHUserDetailsService implements UserDetailsService {
         return person.getMember().map(Member::isCurrentMember).orElse(false);
     }
 
-    public abstract class CHAuthenticationException extends UsernameNotFoundException {
+    public abstract static class CHAuthenticationException extends UsernameNotFoundException {
         public CHAuthenticationException(String msg) {
             super(msg);
         }
     }
 
-    public class CHInvalidMemberException extends CHAuthenticationException {
+    public static class CHInvalidMemberException extends CHAuthenticationException {
 
         public CHInvalidMemberException() {
             super("Not a valid CH member");
         }
     }
 
-    public class CHMemberConflictException extends CHAuthenticationException {
+    public static class CHMemberConflictException extends CHAuthenticationException {
 
         public CHMemberConflictException() {
             super("Conflict between NetID and student number");

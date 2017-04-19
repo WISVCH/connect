@@ -1,6 +1,7 @@
 package ch.wisv.connect.overlay.authentication;
 
 import ch.wisv.connect.overlay.services.CHUserDetailsService;
+import ch.wisv.connect.overlay.services.CHUserDetailsService.CHInvalidMemberException;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +44,8 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
 
             String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
             if (!"student".equals(affiliation)) {
-                throw new IllegalArgumentException("Affiliation not supported");
+                log.warn("Unsupported affiliation: {}", affiliation);
+                throw new CHInvalidMemberException();
             }
             String netid = authentication.getName();
             netid = netid.substring(0, netid.indexOf('@'));
