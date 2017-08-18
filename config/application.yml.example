@@ -1,0 +1,18 @@
+server:
+  issuer: http://localhost:8080/
+  force_https: false
+
+crypto.keystore: classpath:keystore.jwks
+
+saml:
+  entity_id: marksamltest
+  entity_baseurl: http://localhost:8080
+  idp_url: http://photon-01.chnet:8090/simplesaml/saml2/idp/metadata.php
+  idp_entity_id: http://photon-01.chnet:8090/simplesaml/saml2/idp/metadata.php
+  keystore: classpath:samlKeystore.jks
+  keyname: apollo
+  keypass: nalle123
+
+dienst2:
+  apitoken: CHANGEME
+  baseurl: https://frans.chnet/dienst2
