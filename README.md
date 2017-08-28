@@ -33,6 +33,7 @@ The servlet container can be configured with the following parameters:
 Configure the location of the properties file with `-Dspring.config.location=/path/to/config/application.properties` as
 a JVM parameter. Spring profile `production` is used in production; to enable, add `-Dspring.profiles.active=production`
 as a JVM parameter.
+
 ## Releases
 
 Releases can be found on [our Bintray repository][4].
@@ -44,7 +45,6 @@ tag, a subsequent `mvn release:perform` will build the tagged version and upload
 
 Building:
 ```bash
-mvn clean package
 docker build .
 ```
 
