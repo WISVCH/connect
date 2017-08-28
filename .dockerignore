@@ -1,3 +1,2 @@
-**
-!tomcat-server.xml
-!wisvch-connect-overlay/target/connect.war
+target
+.idea

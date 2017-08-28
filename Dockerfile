@@ -1,5 +1,10 @@
+FROM maven:3.5-jdk-8 as builder
+
+COPY . /src
+WORKDIR /src
+RUN mvn package
+
 FROM tomcat:8.5-jre8
-MAINTAINER Mark Janssen <mark@praseodym.net>
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 
@@ -15,4 +20,4 @@ RUN mkdir -p /opt/newrelic && \
 ENV CATALINA_OPTS="-javaagent:/opt/newrelic/newrelic.jar"
 EXPOSE 8443
 
-ADD wisvch-connect-overlay/target/connect.war /usr/local/tomcat/webapps/ROOT.war
+COPY --from=builder /src/wisvch-connect-overlay/target/connect.war /usr/local/tomcat/webapps/ROOT.war
