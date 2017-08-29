@@ -73,7 +73,7 @@ public class CHUserDetailsService implements UserDetailsService {
         Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
-        Optional<Person> personFromStudentNumber = StringUtils.isBlank(studentNumber) ?
+        Optional<Person> personFromStudentNumber = StringUtils.isNotBlank(studentNumber) ?
                 dienst2Repository.getPersonFromStudentNumber(studentNumber) : Optional.empty();
 
         if (personFromNetid.isPresent() && personFromStudentNumber.isPresent()) {
