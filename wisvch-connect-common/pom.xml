@@ -4,7 +4,7 @@
     <parent>
         <artifactId>wisvch-connect-parent</artifactId>
         <groupId>ch.wisv</groupId>
-        <version>1.2.6.6</version>
+        <version>1.2.6.7-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
