@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8" %>
 <%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
@@ -67,8 +68,9 @@
         <div class="span6 well">
             <h2>Log in with TU Delft NetID</h2>
 
-            <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">Login with TU Delft
-                NetID</a></div>
+            <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">
+                Login with TU Delft NetID
+            </a></div>
         </div>
     </div>
 </div>

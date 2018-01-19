@@ -49,7 +49,7 @@ public class CHUserDetailsService implements UserDetailsService {
         try {
             Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
             return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             log.error("Could not load user details by username", e);
             throw e;
         }
