@@ -22,10 +22,10 @@
        xmlns:c="http://www.springframework.org/schema/c"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
-                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-                           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+                           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+                           http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
 
     <import resource="wisvch-ldap.xml"/>
     <import resource="wisvch-saml.xml"/>
@@ -62,20 +62,23 @@
         <property name="useForward" value="true"/>
     </bean>
 
-    <security:authentication-manager alias="authenticationManager">
+    <security:authentication-manager id="authenticationManager">
         <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
         <security:authentication-provider ref="delegateSamlAuthenticationProvider"/>
     </security:authentication-manager>
 
     <mvc:view-controller path="/login" view-name="login"/>
+    <mvc:view-controller path="/error" view-name="error"/>
 
-    <security:http disable-url-rewriting="true" use-expressions="true">
-        <security:form-login login-page="/login" login-processing-url="/ldap/login" username-parameter="username"
-                             password-parameter="password"
-                             authentication-failure-handler-ref="authenticationFailureHandler"
-                             authentication-success-handler-ref="authenticationTimeStamper"/>
+    <security:http authentication-manager-ref="authenticationManager">
         <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
+        <security:form-login login-page="/login"
+                             login-processing-url="/ldap/login"
+                             default-target-url="/"
+                             always-use-default-target="true"
+                             authentication-failure-handler-ref="authenticationFailureHandler"
+                             authentication-success-handler-ref="authenticationTimeStamper"/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/logout"/>
         <security:anonymous/>
@@ -90,6 +93,4 @@
           c:apiToken="${dienst2.apitoken}"/>
     <bean class="ch.wisv.dienst2.apiclient.util.Dienst2Repository" c:baseUrl="${dienst2.baseurl}"
           c:restTemplate-ref="dienst2RestTemplate"/>
-
-    <bean id="discoveryEndpointOverride" class="ch.wisv.connect.overlay.web.DiscoveryEndpointOverride"/>
 </beans>

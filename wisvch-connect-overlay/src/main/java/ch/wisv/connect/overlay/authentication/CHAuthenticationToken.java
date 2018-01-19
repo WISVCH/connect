@@ -35,7 +35,6 @@ public class CHAuthenticationToken extends ExpiringUsernameAuthenticationToken {
         this.originalAuthentication = originalAuthentication;
     }
 
-
     @Override
     public void eraseCredentials() {
         if (originalAuthentication instanceof CredentialsContainer) {
