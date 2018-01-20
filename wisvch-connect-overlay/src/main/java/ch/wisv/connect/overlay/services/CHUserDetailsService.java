@@ -128,6 +128,7 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     @Cacheable("userDetails")
+    @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserBySubject(String subject) throws CHAuthenticationException {
         log.debug("Loading user by subject={}", subject);
         Matcher subjectMatcher = subjectPattern.matcher(subject);
