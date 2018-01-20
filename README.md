@@ -48,6 +48,8 @@ Building:
 docker build .
 ```
 
+Production images are built by and available from [Docker Hub](https://hub.docker.com/r/wisvch/connect/).
+
 [1]: http://openid.net/connect/ "OpenID Connect"
 [2]: https://github.com/WISVCH/dienst2 "Dienst2"
 [3]: https://connect.ch.tudelft.nl/ "CH Connect"
