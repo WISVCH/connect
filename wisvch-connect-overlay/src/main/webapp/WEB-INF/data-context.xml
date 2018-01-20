@@ -49,6 +49,7 @@
             <jdbc:script location="classpath:/db/hsql/users.sql"/>
             <jdbc:script location="classpath:/db/hsql/clients.sql"/>
             <jdbc:script location="classpath:/db/hsql/scopes.sql"/>
+            <jdbc:script location="classpath:/db/hsql/wisvch.sql"/>
         </jdbc:initialize-database>
 
         <bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter"
