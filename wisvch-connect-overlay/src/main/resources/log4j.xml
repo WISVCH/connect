@@ -18,6 +18,9 @@
     <logger name="org.mitre.openid">
         <level value="debug"/>
     </logger>
+    <logger name="org.mitre.openid.connect.service.impl.DefaultApprovedSiteService">
+        <level value="info"/>
+    </logger>
     <logger name="org.mitre.oauth2">
         <level value="info"/>
     </logger>
