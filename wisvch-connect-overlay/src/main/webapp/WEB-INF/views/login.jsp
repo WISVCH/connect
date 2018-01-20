@@ -18,18 +18,16 @@
 <o:topbar/>
 <div class="container-fluid main">
 
-    <h1>Login</h1>
-
     <c:if test="${ param.error != null }">
         <div class="alert alert-error">
             <c:choose>
                 <c:when test="${ param.chMemberError == 'conflict'}">
-                    Your CH membership record contains conflicting information. Please <a
-                        href="https://ch.tudelft.nl/contact/board">contact the board</a> to have this corrected.
+                    Your CH membership record contains conflicting information. Please
+                    <a href="https://ch.tudelft.nl/contact/board">contact the board</a> to get this corrected.
                 </c:when>
                 <c:when test="${ param.chMemberError == 'invalid'}">
-                    We could not find a current CH membership record. If you are a CH member, please <a
-                        href="https://ch.tudelft.nl/contact/board">contact the board</a>.
+                    We could not find a current CH membership record. If you are a CH member, please
+                    <a href="https://ch.tudelft.nl/contact/board">contact the board</a> to get this corrected.
                 </c:when>
                 <c:otherwise>
                     <spring:message code="login.error"/>
@@ -39,33 +37,33 @@
     </c:if>
 
     <div class="row-fluid">
-        <div class="span6 well">
-            <h2>Login with CH Account</h2>
+        <div class="span6 well" style="height: 15em">
+            <h2>Log in with CH Account</h2>
 
             <form action="${pageContext.request.contextPath}/ldap/login" method="POST">
                 <div>
                     <div class="input-prepend input-block-level">
                         <span class="add-on"><i class="icon-user"></i></span>
                         <input type="text" placeholder="Username" autocorrect="off" autocapitalize="off"
-                               autocomplete="off" spellcheck="false" value="<c:out value="${ login_hint }" />"
-                               id="username" name="username">
+                               spellcheck="false" id="username" name="username"
+                               value="<c:out value="${ login_hint }" />">
                     </div>
                 </div>
                 <div>
                     <div class="input-prepend input-block-level">
                         <span class="add-on"><i class="icon-lock"></i></span>
                         <input type="password" placeholder="Password" autocorrect="off" autocapitalize="off"
-                               autocomplete="off" spellcheck="false" id="password" name="password">
+                               spellcheck="false" id="password" name="password">
                     </div>
                 </div>
                 <div>
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="submit" class="btn" value="Login" name="submit">
                 </div>
             </form>
         </div>
 
-        <div class="span6 well">
+        <div class="span6 well" style="height: 15em">
             <h2>Log in with TU Delft NetID</h2>
 
             <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">
