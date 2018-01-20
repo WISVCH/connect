@@ -13,10 +13,7 @@ import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.springframework.cache.annotation.Cacheable;
 
 /**
  * OIDC User Info repository
@@ -24,36 +21,14 @@ import java.util.regex.Pattern;
 public class CHUserInfoRepository implements UserInfoRepository {
     private static final Logger log = LoggerFactory.getLogger(CHUserInfoRepository.class);
 
-    private static final Pattern usernamePattern = Pattern.compile(CHUserDetails.USERNAME_PREFIX + "(\\d+)");
-
     @Autowired
     CHUserDetailsService chUserDetailsService;
 
     @Override
-    public UserInfo getByUsername(String username) {
-        log.debug("Loading user info for {}", username);
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof CHUserDetails) {
-            CHUserDetails userDetails = (CHUserDetails) principal;
-            if (userDetails.getUsername().equals(username)) {
-                log.debug("User details from authentication object match");
-                return mapUserDetailsToUserInfo(userDetails);
-            } else {
-                // Not sure if there is a case where an authenticated user loads user info for someone else, so log this
-                log.warn("User details from authentication object DO NOT match");
-            }
-        }
-
-        Matcher usernameMatcher = usernamePattern.matcher(username);
-        if (!usernameMatcher.matches()) {
-            log.debug("Username did not match pattern");
-            return null;
-        }
-
-        int id = Integer.parseInt(usernameMatcher.group(1));
-        log.debug("Loading user info from service by id {}", id);
-        CHUserDetails userDetails = chUserDetailsService.loadUserById(id);
+    @Cacheable("userInfo")
+    public UserInfo getByUsername(String subject) {
+        log.debug("Loading user info for subject={}", subject);
+        CHUserDetails userDetails = chUserDetailsService.loadUserBySubject(subject);
         return mapUserDetailsToUserInfo(userDetails);
     }
 

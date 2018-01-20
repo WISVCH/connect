@@ -1,9 +1,9 @@
 package ch.wisv.connect.overlay.authentication;
 
+import ch.wisv.connect.overlay.model.CHUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 
 import java.time.Instant;
@@ -18,14 +18,14 @@ public class CHAuthenticationToken extends ExpiringUsernameAuthenticationToken {
     private Authentication originalAuthentication;
 
     public static CHAuthenticationToken createAuthenticationToken(Authentication originalAuthentication,
-                                                                  UserDetails userDetails) {
+                                                                  CHUserDetails userDetails) {
         Date tokenExpiration;
         if (originalAuthentication instanceof ExpiringUsernameAuthenticationToken) {
             tokenExpiration = ((ExpiringUsernameAuthenticationToken) originalAuthentication).getTokenExpiration();
         } else {
             tokenExpiration = Date.from(Instant.now().plusSeconds(8L * 3600L));
         }
-        return new CHAuthenticationToken(tokenExpiration, userDetails, userDetails.getAuthorities(),
+        return new CHAuthenticationToken(tokenExpiration, userDetails.getUsername(), userDetails.getAuthorities(),
                 originalAuthentication);
     }
 

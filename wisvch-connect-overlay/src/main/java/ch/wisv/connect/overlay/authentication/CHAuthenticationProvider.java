@@ -1,5 +1,6 @@
 package ch.wisv.connect.overlay.authentication;
 
+import ch.wisv.connect.overlay.model.CHUserDetails;
 import ch.wisv.connect.overlay.services.CHUserDetailsService;
 import ch.wisv.connect.overlay.services.CHUserDetailsService.CHInvalidMemberException;
 import org.opensaml.saml2.core.Attribute;
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.security.saml.SAMLCredential;
 
@@ -29,7 +29,6 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        // TODO: UserCache
         Object credentials = authentication.getCredentials();
         Object principal = authentication.getPrincipal();
 
@@ -50,14 +49,14 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             String netid = authentication.getName();
             netid = netid.substring(0, netid.indexOf('@'));
             String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
-            UserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
+            CHUserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
             log.debug("Authenticated via LDAP: {}", ldapUsername);
 
-            UserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
+            CHUserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else {
             log.debug("Invalid authentication object type");

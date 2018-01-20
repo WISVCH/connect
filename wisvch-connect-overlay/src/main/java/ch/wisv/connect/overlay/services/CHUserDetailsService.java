@@ -10,8 +10,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.ldap.core.support.LdapContextSource;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
@@ -21,6 +23,8 @@ import javax.naming.directory.SearchControls;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * CH User Details Service
@@ -31,6 +35,8 @@ import java.util.Set;
 public class CHUserDetailsService implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(CHUserDetailsService.class);
+
+    private static final Pattern subjectPattern = Pattern.compile(CHUserDetails.SUBJECT_PREFIX + "(\\d+)");
 
     @Autowired
     private Dienst2Repository dienst2Repository;
@@ -45,8 +51,11 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws CHAuthenticationException {
+    @CachePut(cacheNames = "userDetails", key = "#result.subject")
+    @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
+    public CHUserDetails loadUserByUsername(String username) throws CHAuthenticationException {
         try {
+            log.debug("Loading user by username={}", username);
             Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
             return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
         } catch (Throwable e) {
@@ -68,9 +77,12 @@ public class CHUserDetailsService implements UserDetailsService {
      * @return user details object
      * @throws CHAuthenticationException
      */
-    public UserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
+    @CachePut(cacheNames = "userDetails", key = "#result.subject")
+    @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
+    public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
             CHAuthenticationException {
         Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
+        log.debug("Loading user by NetID netid={} studentNumber=", netid, studentNumber);
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
         Optional<Person> personFromStudentNumber = StringUtils.isNotBlank(studentNumber) ?
@@ -80,7 +92,7 @@ public class CHUserDetailsService implements UserDetailsService {
             Person person = verifyMembership(personFromNetid);
             if (personFromStudentNumber.get().getId() != personFromNetid.get().getId()) {
                 // We have two different matches: conflict
-                log.warn("Conflict: Dienst2 person {} matching student number is not Dienst2 person {} matching NetID",
+                log.warn("Conflict: dienst2personId={} matching student number is not dienst2PersonId={} matching NetID",
                         personFromStudentNumber.get().getId(), personFromNetid.get().getId());
                 throw new CHMemberConflictException();
             } else {
@@ -91,7 +103,7 @@ public class CHUserDetailsService implements UserDetailsService {
             String dienst2StudentNumber = person.getStudent().map(Student::getStudentNumber).orElse("");
             if (StringUtils.isNotBlank(dienst2StudentNumber)) {
                 // If Dienst2 student number is set, it should have matched earlier: conflict
-                log.warn("Conflict: Student number {} from Dienst2 does not match student number {} from SAML",
+                log.warn("Conflict: dienst2StudentNumber={} does not match samlStudentNumber={}",
                         dienst2StudentNumber, studentNumber);
                 throw new CHMemberConflictException();
             } else {
@@ -103,8 +115,7 @@ public class CHUserDetailsService implements UserDetailsService {
             String dienst2Netid = person.getNetid();
             if (StringUtils.isNotBlank(dienst2Netid)) {
                 // If Dienst2 NetID is set, it should have matched earlier: conflict
-                log.warn("Conflict: NetID {} from Dienst2 does not match NetID {} from SAML",
-                        dienst2Netid, netid);
+                log.warn("Conflict: dienst2Netid={} does not match samlNetid={}", dienst2Netid, netid);
                 throw new CHMemberConflictException();
             } else {
                 // TODO: write back NetID to Dienst2
@@ -114,6 +125,19 @@ public class CHUserDetailsService implements UserDetailsService {
             // No matches: invalid member
             throw new CHInvalidMemberException();
         }
+    }
+
+    @Cacheable("userDetails")
+    public CHUserDetails loadUserBySubject(String subject) throws CHAuthenticationException {
+        log.debug("Loading user by subject={}", subject);
+        Matcher subjectMatcher = subjectPattern.matcher(subject);
+        if (!subjectMatcher.matches()) {
+            log.warn("Subject subject={} does not match pattern", subject);
+            return null;
+        }
+        int id = Integer.parseInt(subjectMatcher.group(1));
+        Person person = verifyMembership(dienst2Repository.getPerson(id));
+        return createUserDetails(person, null);
     }
 
     private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
@@ -128,11 +152,6 @@ public class CHUserDetailsService implements UserDetailsService {
             log.debug("LDAP roles from search: {}", ldapGroups);
         }
         return new CHUserDetails(person, ldapGroups, authenticationSource);
-    }
-
-    public CHUserDetails loadUserById(int id) throws CHAuthenticationException {
-        Person person = verifyMembership(dienst2Repository.getPerson(id));
-        return createUserDetails(person, null);
     }
 
     private Person verifyMembership(Optional<Person> person) {

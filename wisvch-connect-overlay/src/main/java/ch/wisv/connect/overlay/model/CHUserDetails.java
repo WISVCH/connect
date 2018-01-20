@@ -13,7 +13,7 @@ import java.util.Set;
  * CH User Details
  */
 public class CHUserDetails implements UserDetails {
-    public static final String USERNAME_PREFIX = "WISVCH.";
+    public static final String SUBJECT_PREFIX = "WISVCH.";
 
     private Person person;
     private Set<String> ldapGroups;
@@ -45,7 +45,11 @@ public class CHUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return USERNAME_PREFIX + person.getId();
+        return getSubject();
+    }
+
+    public String getSubject() {
+        return SUBJECT_PREFIX + person.getId();
     }
 
     @Override
