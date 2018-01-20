@@ -36,6 +36,12 @@
         </div>
     </c:if>
 
+    <c:if test="${ param.logout != null }">
+        <div class="alert alert-success">
+            You have been logged out.
+        </div>
+    </c:if>
+
     <div class="row-fluid">
         <div class="span6 well" style="height: 15em">
             <h2>Log in with CH Account</h2>
