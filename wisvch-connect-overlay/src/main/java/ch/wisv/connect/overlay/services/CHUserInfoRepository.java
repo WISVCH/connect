@@ -47,7 +47,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
         ui.setEmail(person.getEmail());
         ui.setName(person.getFormattedName());
         ui.setGivenName(person.getFirstname());
-        ui.setFamilyName(person.getSurname());
+        ui.setFamilyName(person.getSurnameWithPreposition());
         Address address = new DefaultAddress();
         address.setStreetAddress(person.getStreetAddress());
         address.setPostalCode(person.getPostcode());

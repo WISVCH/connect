@@ -103,8 +103,5 @@
             <bean class="com.github.benmanes.caffeine.cache.CaffeineSpec" factory-method="parse"
                   c:specification="maximumSize=1000,expireAfterWrite=600s"/>
         </property>
-
     </bean>
-
-
 </beans>
