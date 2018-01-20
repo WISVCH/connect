@@ -46,6 +46,7 @@
           c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
 
     <bean id="chUserInfoRepository" primary="true" class="ch.wisv.connect.overlay.services.CHUserInfoRepository"/>
+    <bean id="chOidcTokenService" primary="true" class="ch.wisv.connect.overlay.services.CHOIDCTokenService"/>
 
     <bean id="chScopeClaimTranslationService" primary="true"
           class="ch.wisv.connect.overlay.services.CHScopeClaimTranslationService"/>
