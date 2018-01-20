@@ -61,7 +61,6 @@
             </map>
         </property>
         <property name="defaultFailureUrl" value="/login?error=failure"/>
-        <property name="useForward" value="true"/>
     </bean>
 
     <security:authentication-manager id="authenticationManager">
