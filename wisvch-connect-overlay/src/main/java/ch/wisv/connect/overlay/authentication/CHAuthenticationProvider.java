@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
  * CH Authentication Provider
  */
 public class CHAuthenticationProvider implements AuthenticationProvider {
-
     private static final Logger log = LoggerFactory.getLogger(CHAuthenticationProvider.class);
 
     @Autowired
@@ -35,26 +34,33 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
         if (credentials != null && credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
+            String username = authentication.getName();
             if (log.isDebugEnabled()) {
                 String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " +
                         samlCredential.getAttributeAsString(n)).collect(Collectors.joining("; "));
-                log.debug("Authenticated via SAML: {} - {}", authentication.getName(), attributesString);
+                log.debug("Authenticated via SAML: username={} attributes=[{}]", username,
+                        attributesString);
             }
 
             String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
             if (!"student".equals(affiliation)) {
-                log.warn("Unsupported affiliation: {}", affiliation);
+                log.warn("Unsupported affiliation; affiliation={}", affiliation);
                 throw new CHInvalidMemberException();
             }
-            String netid = authentication.getName();
-            netid = netid.substring(0, netid.indexOf('@'));
+
+            if (!username.endsWith("@tudelft.nl")) {
+                log.warn("Unsupported username suffix; username={}", username);
+                throw new CHInvalidMemberException();
+            }
+            String netid = username.substring(0, username.indexOf('@'));
             String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
+
             CHUserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
-            log.debug("Authenticated via LDAP: {}", ldapUsername);
+            log.debug("Authenticated via LDAP: username={}", ldapUsername);
 
             CHUserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);

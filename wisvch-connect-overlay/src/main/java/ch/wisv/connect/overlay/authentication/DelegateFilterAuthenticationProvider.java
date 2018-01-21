@@ -10,7 +10,6 @@ import org.springframework.security.core.AuthenticationException;
  * Authentication Provider that performs delegates then filters
  */
 public class DelegateFilterAuthenticationProvider implements AuthenticationProvider {
-
     private static final Logger log = LoggerFactory.getLogger(DelegateFilterAuthenticationProvider.class);
 
     private final AuthenticationProvider delegate;
@@ -23,13 +22,19 @@ public class DelegateFilterAuthenticationProvider implements AuthenticationProvi
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("Pre-delegate authentication type: {}", authentication.getClass().toGenericString());
+        if (log.isDebugEnabled()) {
+            log.debug("Pre-delegate authentication type: {}", authentication.getClass().toGenericString());
+        }
 
         authentication = delegate.authenticate(authentication);
-        log.debug("Post-delegate authentication type: {}", authentication.getClass().toGenericString());
+        if (log.isDebugEnabled()) {
+            log.debug("Post-delegate authentication type: {}", authentication.getClass().toGenericString());
+        }
 
         authentication = filter.authenticate(authentication);
-        log.debug("Post-filter authentication type: {}", authentication.getClass().toGenericString());
+        if (log.isDebugEnabled()) {
+            log.debug("Post-filter authentication type: {}", authentication.getClass().toGenericString());
+        }
 
         return authentication;
     }
