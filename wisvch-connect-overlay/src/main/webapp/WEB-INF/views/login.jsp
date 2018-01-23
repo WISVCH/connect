@@ -23,11 +23,11 @@
             <c:choose>
                 <c:when test="${ param.chMemberError == 'conflict'}">
                     Your CH membership record contains conflicting information. Please
-                    <a href="https://ch.tudelft.nl/contact/board">contact the board</a> to get this corrected.
+                    <a href="https://ch.tudelft.nl/contact/">contact the board</a> if you think this is in error.
                 </c:when>
                 <c:when test="${ param.chMemberError == 'invalid'}">
-                    We could not find a current CH membership record. If you are a CH member, please
-                    <a href="https://ch.tudelft.nl/contact/board">contact the board</a> to get this corrected.
+                    We could not find a current CH membership record linked to your login information. Please
+                    <a href="https://ch.tudelft.nl/contact/">contact the board</a> if you think this is in error.
                 </c:when>
                 <c:otherwise>
                     <spring:message code="login.error"/>

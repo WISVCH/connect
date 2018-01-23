@@ -82,7 +82,7 @@ public class CHUserDetailsService implements UserDetailsService {
     public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
             CHAuthenticationException {
         Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
-        log.debug("Loading user by NetID netid={} studentNumber=", netid, studentNumber);
+        log.debug("Loading user by NetID netid={} studentNumber={}", netid, studentNumber);
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
         Optional<Person> personFromStudentNumber = StringUtils.isNotBlank(studentNumber) ?
@@ -123,6 +123,7 @@ public class CHUserDetailsService implements UserDetailsService {
             }
         } else {
             // No matches: invalid member
+            log.warn("Invalid: no matches for netid={} studentNumber=", netid, studentNumber);
             throw new CHInvalidMemberException();
         }
     }
@@ -170,14 +171,12 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     public static class CHInvalidMemberException extends CHAuthenticationException {
-
         public CHInvalidMemberException() {
             super("Not a valid CH member");
         }
     }
 
     public static class CHMemberConflictException extends CHAuthenticationException {
-
         public CHMemberConflictException() {
             super("Conflict between NetID and student number");
         }
