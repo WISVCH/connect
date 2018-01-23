@@ -54,14 +54,11 @@ public class CHUserDetailsService implements UserDetailsService {
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByUsername(String username) throws CHAuthenticationException {
-        try {
-            log.debug("Loading user by username={}", username);
-            Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
-            return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
-        } catch (Throwable e) {
-            log.warn("Could not load user details by username", e);
-            throw e;
-        }
+        Preconditions.checkArgument(StringUtils.isNotBlank(username), "username must not be blank");
+        String meta = "ldapUsername=" + username;
+        log.debug("Loading user by {}", meta);
+        Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username), meta);
+        return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
     }
 
     /**
@@ -81,15 +78,17 @@ public class CHUserDetailsService implements UserDetailsService {
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
             CHAuthenticationException {
-        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
-        log.debug("Loading user by NetID netid={} studentNumber={}", netid, studentNumber);
+        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid must not be blank");
+        Preconditions.checkArgument(StringUtils.isNotBlank(studentNumber), "studentNumber must not be blank");
+        String meta = String.format("netid=%s studentNumber=%s", netid, studentNumber);
+        log.debug("Loading user by {}", meta);
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
         Optional<Person> personFromStudentNumber = StringUtils.isNotBlank(studentNumber) ?
                 dienst2Repository.getPersonFromStudentNumber(studentNumber) : Optional.empty();
 
         if (personFromNetid.isPresent() && personFromStudentNumber.isPresent()) {
-            Person person = verifyMembership(personFromNetid);
+            Person person = verifyMembership(personFromNetid, meta);
             if (personFromStudentNumber.get().getId() != personFromNetid.get().getId()) {
                 // We have two different matches: conflict
                 log.warn("Conflict: dienst2personId={} matching student number is not dienst2PersonId={} matching NetID",
@@ -99,7 +98,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromNetid.isPresent()) {
-            Person person = verifyMembership(personFromNetid);
+            Person person = verifyMembership(personFromNetid, meta);
             String dienst2StudentNumber = person.getStudent().map(Student::getStudentNumber).orElse("");
             if (StringUtils.isNotBlank(dienst2StudentNumber)) {
                 // If Dienst2 student number is set, it should have matched earlier: conflict
@@ -111,7 +110,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromStudentNumber.isPresent()) {
-            Person person = verifyMembership(personFromStudentNumber);
+            Person person = verifyMembership(personFromStudentNumber, meta);
             String dienst2Netid = person.getNetid();
             if (StringUtils.isNotBlank(dienst2Netid)) {
                 // If Dienst2 NetID is set, it should have matched earlier: conflict
@@ -138,25 +137,28 @@ public class CHUserDetailsService implements UserDetailsService {
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetid(String netid) throws CHAuthenticationException {
-        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
-        log.debug("Loading user by NetID netid={}", netid);
+        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid must not be blank");
+        String meta = "netid=" + netid;
+        log.debug("Loading user by {}", meta);
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
-        Person person = verifyMembership(personFromNetid);
+        Person person = verifyMembership(personFromNetid, meta);
         return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
     }
 
     @Cacheable("userDetails")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserBySubject(String subject) throws CHAuthenticationException {
-        log.debug("Loading user by subject={}", subject);
+        Preconditions.checkArgument(StringUtils.isNotBlank(subject), "subject must not be blank");
+        String meta = "subject=" + subject;
+        log.debug("Loading user by {}", meta);
         Matcher subjectMatcher = subjectPattern.matcher(subject);
         if (!subjectMatcher.matches()) {
             log.warn("Subject subject={} does not match pattern", subject);
             return null;
         }
         int id = Integer.parseInt(subjectMatcher.group(1));
-        Person person = verifyMembership(dienst2Repository.getPerson(id));
+        Person person = verifyMembership(dienst2Repository.getPerson(id), meta);
         return createUserDetails(person, null);
     }
 
@@ -174,12 +176,17 @@ public class CHUserDetailsService implements UserDetailsService {
         return new CHUserDetails(person, ldapGroups, authenticationSource);
     }
 
-    private Person verifyMembership(Optional<Person> person) {
-        return person.filter(this::verifyMembership).orElseThrow(CHInvalidMemberException::new);
-    }
-
-    public boolean verifyMembership(Person person) {
-        return person.getMember().map(Member::isCurrentMember).orElse(false);
+    private Person verifyMembership(Optional<Person> person, String meta) {
+        if (!person.isPresent()) {
+            log.warn("No Dienst2 person found for {}", meta);
+            throw new CHInvalidMemberException();
+        }
+        Person p = person.get();
+        if (!p.getMember().map(Member::isCurrentMember).orElse(false)) {
+            log.warn("Person dienst2Id={} is not a valid member (found by {})", p.getId(), meta);
+            throw new CHInvalidMemberException();
+        }
+        return p;
     }
 
     public abstract static class CHAuthenticationException extends UsernameNotFoundException {
