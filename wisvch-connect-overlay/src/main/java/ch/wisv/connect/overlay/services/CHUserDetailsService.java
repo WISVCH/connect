@@ -59,7 +59,7 @@ public class CHUserDetailsService implements UserDetailsService {
             Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username));
             return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
         } catch (Throwable e) {
-            log.error("Could not load user details by username", e);
+            log.warn("Could not load user details by username", e);
             throw e;
         }
     }
@@ -126,6 +126,24 @@ public class CHUserDetailsService implements UserDetailsService {
             log.warn("Invalid: no matches for netid={} studentNumber=", netid, studentNumber);
             throw new CHInvalidMemberException();
         }
+    }
+
+    /**
+     * Look up user by NetID
+     *
+     * @param netid NetID to look for
+     * @return user details object
+     * @throws CHAuthenticationException
+     */
+    @CachePut(cacheNames = "userDetails", key = "#result.subject")
+    @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
+    public CHUserDetails loadUserByNetid(String netid) throws CHAuthenticationException {
+        Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid cannot be blank");
+        log.debug("Loading user by NetID netid={}", netid);
+
+        Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
+        Person person = verifyMembership(personFromNetid);
+        return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
     }
 
     @Cacheable("userDetails")

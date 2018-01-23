@@ -42,20 +42,27 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                         attributesString);
             }
 
-            String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
-            if (!"student".equals(affiliation)) {
-                log.warn("Unsupported affiliation; affiliation={}", affiliation);
-                throw new CHInvalidMemberException();
-            }
-
             if (!username.endsWith("@tudelft.nl")) {
                 log.warn("Unsupported username suffix; username={}", username);
                 throw new CHInvalidMemberException();
             }
             String netid = username.substring(0, username.indexOf('@'));
-            String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
 
-            CHUserDetails userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
+            CHUserDetails userDetails;
+            String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
+            switch (affiliation) {
+                case "student":
+                    String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
+                    userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
+                    break;
+                case "employee":
+                    userDetails = userDetailService.loadUserByNetid(netid);
+                    break;
+                default:
+                    log.warn("Unsupported affiliation; affiliation={}", affiliation);
+                    throw new CHInvalidMemberException();
+            }
+
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else if (principal != null && principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
