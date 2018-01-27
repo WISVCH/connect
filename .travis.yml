@@ -1,8 +1,6 @@
 sudo: required
 services:
 - docker
-language: java
-jdk: oraclejdk8
 # At least Docker 17.05 is needed for multi-stage builds, so upgrade
 before_install:
   - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -12,5 +10,6 @@ before_install:
 script:
 - docker build .
 notifications:
+  email: false
   slack:
     secure: Ec1kPzRhZ9RSwqLs6Dt8s3Z5TPQFmRG0Xioxc8TkYwarIhfTsCYB1I5SsNHa4XnCATK3bL3jPaKkhL3kziZrw4VJg8BvkG+8jWUMaVbjcJKgd04P3oKUpsE49Wx7biIAJsJfUCdbuQLyrcHLmdB3GlcNw4nkvR7oSgEIlfvxjV135M310d9kDgC68v37hDOKQVuYK4zaFxKs4QhrIKFRFMugS46LV3m82ZJwxaTuDcWQHKWNQQE8v6zSdLUGzljJyZUAe6w/Txyp3MkjtF0SwRotYpbykU8bBdoAlQ3t+lWUt7N56/TB5+w3dSIm3PChrr23xY1jkzIGLbI+7PUJCE4yq3R7nGfx8aXPSYocw3XDzSrkWhz2ohuMdUoKDYyZ8tzF0Iiblc9KBtWe8rop1C5q1PHMcXOiI+gS0fMbja0joIudrBhyRofmBgwXNrBMNeyghx8pgN1tzDrVjidukz9aZJI4+dmFul6rjNJgggMk7GAUir/ZKeHV08AbCesp3z9ZY5O3VQpBjthPvzx5+pNJUfatncAoVUNKySUKKdJbjtzlt0EZOtA/QFFWi4F+C47UafLoVSNhHaWWVMI1raJQkzppekQn2/mKc+zBvpFxhUVlaY9mGdCJh5WRbjujmYvN7pUlLBJjrnvKdy6H7iKxMWebYgwv7Q+8iFvelus=

@@ -1,4 +1,4 @@
-# WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)](https://travis-ci.org/WISVCH/connect) [![Download](https://api.bintray.com/packages/wisvch/maven/wisvch-connect/images/download.svg)](https://bintray.com/wisvch/maven/wisvch-connect/_latestVersion)
+# WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)](https://travis-ci.org/WISVCH/connect) [![Download](https://api.bintray.com/packages/wisvch/maven/wisvch-connect/images/download.svg)][4] [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][8]
 
 [OpenID Connect][1] for W.I.S.V. 'Christiaan Huygens'.
 
@@ -48,7 +48,7 @@ Building:
 docker build .
 ```
 
-Production images are built by and available from [Docker Hub](https://hub.docker.com/r/wisvch/connect/).
+Production images are built by and available from [Quay][8].
 
 [1]: http://openid.net/connect/ "OpenID Connect"
 [2]: https://github.com/WISVCH/dienst2 "Dienst2"
@@ -57,3 +57,4 @@ Production images are built by and available from [Docker Hub](https://hub.docke
 [5]: https://github.com/WISVCH/events "CH Events"
 [6]: https://github.com/mitreid-connect/simple-web-app "MITREid Connect simple-web-app"
 [7]: https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server "MitreID Connect"
+[8]: https://quay.io/repository/wisvch/connect "Docker Repository on Quay"
