@@ -4,7 +4,7 @@ COPY . /src
 WORKDIR /src
 RUN mvn package
 
-FROM tomcat:8.5-jre8
+FROM tomcat:9-jre8
 
 RUN rm -rf /usr/local/tomcat/webapps/*
 
