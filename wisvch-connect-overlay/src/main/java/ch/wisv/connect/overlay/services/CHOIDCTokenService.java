@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.service.impl.DefaultOIDCTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import java.util.Set;
@@ -12,6 +13,7 @@ public class CHOIDCTokenService extends DefaultOIDCTokenService {
 
     private final CHUserDetailsService chUserDetailsService;
 
+    @Autowired
     public CHOIDCTokenService(CHUserDetailsService chUserDetailsService) {
         this.chUserDetailsService = chUserDetailsService;
     }
