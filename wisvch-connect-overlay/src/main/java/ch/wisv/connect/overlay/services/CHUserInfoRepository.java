@@ -15,6 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
 /**
  * OIDC User Info repository
  */
@@ -55,7 +58,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
         address.setCountry(person.getCountry());
         address.setFormatted(person.getFormattedAddress());
         ui.setAddress(address);
-        ui.setBirthdate(person.getBirthdate().toString());
+        ui.setBirthdate(Optional.ofNullable(person.getBirthdate()).map(LocalDate::toString).orElse(null));
         switch (person.getGender()) {
             case "M":
                 ui.setGender("male");
