@@ -30,7 +30,7 @@
     <div class="row-fluid">
         <div class="offset1 span10">
             <div class="hero-unit">
-                <h1 class="text-error"><c:out value="${ errorCode }"/></h1>
+                <h1><span class="text-error"><c:out value="${ errorCode }"/></span></h1>
                 <p><c:out value="${ message }"/></p>
             </div>
         </div>
