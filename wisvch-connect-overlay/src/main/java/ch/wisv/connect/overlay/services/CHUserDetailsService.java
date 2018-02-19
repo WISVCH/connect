@@ -1,7 +1,7 @@
 package ch.wisv.connect.overlay.services;
 
 import ch.wisv.connect.overlay.model.CHUserDetails;
-import ch.wisv.dienst2.apiclient.model.Member;
+import ch.wisv.dienst2.apiclient.model.MembershipStatus;
 import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
 import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
@@ -182,8 +182,10 @@ public class CHUserDetailsService implements UserDetailsService {
             throw new CHInvalidMemberException();
         }
         Person p = person.get();
-        if (!p.getMember().map(Member::isCurrentMember).orElse(false)) {
-            log.warn("Person dienst2Id={} is not a valid member (found by {})", p.getId(), meta);
+        MembershipStatus membershipStatus = p.getMembershipStatus();
+        if (membershipStatus.getValue() < MembershipStatus.REGULAR.getValue()) {
+            log.warn("Person dienst2Id={} is not a valid member (status {}, found by {})",
+                    p.getId(), membershipStatus, meta);
             throw new CHInvalidMemberException();
         }
         return p;
