@@ -110,7 +110,7 @@
         <dependency>
             <groupId>ch.wisv</groupId>
             <artifactId>dienst2-api-client-java</artifactId>
-            <version>0.0.7</version>
+            <version>0.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -126,6 +126,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.4-1203-jdbc42</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datadoghq</groupId>
+            <artifactId>dd-trace-api</artifactId>
+            <version>0.10.0</version>
         </dependency>
     </dependencies>
 </project>

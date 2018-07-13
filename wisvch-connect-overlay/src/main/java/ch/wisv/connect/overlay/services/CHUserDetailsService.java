@@ -6,6 +6,7 @@ import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
 import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
 import com.google.common.base.Preconditions;
+import datadog.trace.api.Trace;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class CHUserDetailsService implements UserDetailsService {
         ldapTemplate.setSearchControls(searchControls);
     }
 
+    @Trace
     @Override
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
@@ -74,6 +76,7 @@ public class CHUserDetailsService implements UserDetailsService {
      * @return user details object
      * @throws CHAuthenticationException
      */
+    @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
@@ -134,6 +137,7 @@ public class CHUserDetailsService implements UserDetailsService {
      * @return user details object
      * @throws CHAuthenticationException
      */
+    @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetid(String netid) throws CHAuthenticationException {
@@ -146,6 +150,7 @@ public class CHUserDetailsService implements UserDetailsService {
         return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
     }
 
+    @Trace
     @Cacheable("userDetails")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserBySubject(String subject) throws CHAuthenticationException {

@@ -3,6 +3,7 @@ package ch.wisv.connect.overlay.authentication;
 import ch.wisv.connect.overlay.model.CHUserDetails;
 import ch.wisv.connect.overlay.services.CHUserDetailsService;
 import ch.wisv.connect.overlay.services.CHUserDetailsService.CHInvalidMemberException;
+import datadog.trace.api.Trace;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,13 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     CHUserDetailsService userDetailService;
 
+    @Trace
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Object credentials = authentication.getCredentials();
         Object principal = authentication.getPrincipal();
 
-        if (credentials != null && credentials instanceof SAMLCredential) {
+        if (credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
             String username = authentication.getName();
@@ -64,7 +66,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             }
 
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
-        } else if (principal != null && principal instanceof LdapUserDetails) {
+        } else if (principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
             log.debug("Authenticated via LDAP: username={}", ldapUsername);
