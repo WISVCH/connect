@@ -24,10 +24,11 @@ Configuration is done through a properties file; refer to `config/application-ex
 
 The servlet container can be configured with the following parameters:
 ```
--Dspring.config.location=$PROJECT_DIR$/config/application.properties -Dlog4j.configuration=log4j-dev.xml
--Djavax.net.ssl.trustStore=$PROJECT_DIR$/wisvch.truststore -Djavax.net.ssl.trustStorePassword=changeit
+-Dspring.config.location=$PROJECT_DIR$/config/application.properties
+-Dlog4j.configurationFile=$PROJECT_DIR$/config/log4j2-dev.xml
+-Djavax.net.ssl.trustStore=$PROJECT_DIR$/wisvch.truststore
+-Djavax.net.ssl.trustStorePassword=changeit
 ```
-
 ## Production
 
 Configure the location of the properties file with `-Dspring.config.location=/path/to/config/application.properties` as

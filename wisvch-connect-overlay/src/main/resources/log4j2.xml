@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %p [%t] %C{2} (%F:%L)%X{ddTraceID}%X{ddSpanID} %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <!-- Application Loggers -->
+        <logger name="ch.wisv" level="debug"/>
+        <logger name="org.mitre.openid" level="debug"/>
+        <logger name="org.mitre.data.AbstractPageOperationTemplate" level="warn"/>
+        <logger name="org.mitre.openid.connect.service.impl.DefaultApprovedSiteService" level="info"/>
+        <logger name="org.mitre.oauth2" level="info"/>
+        <logger name="org.mitre.discovery" level="info"/>
+        <logger name="org.mitre.jose" level="info"/>
+        <logger name="org.mitre.jwt" level="info"/>
+        <logger name="org.mitre.util" level="info"/>
+
+        <!-- 3rdparty Loggers -->
+        <logger name="org.springframework.core" level="info"/>
+        <logger name="org.springframework.beans" level="info"/>
+        <logger name="org.springframework.context" level="info"/>
+        <logger name="org.springframework.web" level="info"/>
+        <logger name="org.springframework.security" level="warn"/>
+
+        <!-- Root Logger -->
+        <Root level="info">
+            <AppenderRef ref="STDOUT"/>
+        </Root>
+    </Loggers>
+</Configuration>
