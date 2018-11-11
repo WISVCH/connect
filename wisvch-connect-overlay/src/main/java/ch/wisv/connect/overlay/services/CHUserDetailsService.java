@@ -6,7 +6,11 @@ import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
 import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
 import com.google.common.base.Preconditions;
+import datadog.trace.api.DDTags;
 import datadog.trace.api.Trace;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,16 +171,19 @@ public class CHUserDetailsService implements UserDetailsService {
         return createUserDetails(person, null);
     }
 
+    @Trace
     private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
         assert person != null;
-        // TODO: externalise search options
         String ldapUsername = person.getLdapUsername();
         Set<String> ldapGroups = Collections.emptySet();
         if (StringUtils.isNotEmpty(ldapUsername)) {
-            String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
-            ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}", new String[]{dn,
-                    ldapUsername}, "cn");
-            log.debug("LDAP roles from search: {}", ldapGroups);
+            Tracer tracer = GlobalTracer.get();
+            try (Scope scope = tracer.buildSpan("GetLdapGroups").startActive(true)) {
+                scope.span().setTag(DDTags.SERVICE_NAME, "ldap");
+                String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
+                ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}",
+                        new String[]{dn, ldapUsername}, "cn");
+            }
         }
         return new CHUserDetails(person, ldapGroups, authenticationSource);
     }

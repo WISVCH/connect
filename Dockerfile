@@ -1,4 +1,4 @@
-FROM maven:3.5-jdk-8 as builder
+FROM maven:3-jdk-8 as builder
 
 COPY . /src
 WORKDIR /src
@@ -15,4 +15,5 @@ ADD https://search.maven.org/remote_content?g=com.datadoghq&a=dd-java-agent&v=LA
 ENV CATALINA_OPTS="-javaagent:/opt/datadog/dd-java-agent.jar"
 ENV DD_SERVICE_NAME="connect"
 
+COPY context.xml /usr/local/tomcat/conf/context.xml
 COPY --from=builder /src/wisvch-connect-overlay/target/connect.war /usr/local/tomcat/webapps/ROOT.war
