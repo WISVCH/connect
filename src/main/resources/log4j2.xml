@@ -20,13 +20,10 @@
 <Configuration>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout
-                    pattern="%style{%d [%t]}{black} %X{ddTraceID} %X{ddSpanID} %highlight{%-5level: %msg%n%throwable}"/>
+            <PatternLayout pattern="%d{ISO8601} %p [%t] %C{2} (%F:%L)%X{ddTraceID}%X{ddSpanID} %m%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="org.apache.log4j" level="info"/>
-
         <!-- Application Loggers -->
         <logger name="ch.wisv" level="debug"/>
         <logger name="org.mitre.openid" level="debug"/>
@@ -46,7 +43,7 @@
         <logger name="org.springframework.security" level="warn"/>
 
         <!-- Root Logger -->
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="STDOUT"/>
         </Root>
     </Loggers>

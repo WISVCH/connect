@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2019 W.I.S.V. 'Christiaan Huygens'
+  Copyright 2018 The MITRE Corporation
+     and the MIT Internet Trust Consortium
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ch.wisv</groupId>
-    <artifactId>wisvch-connect-parent</artifactId>
-    <packaging>pom</packaging>
-    <version>1.3.2.7-SNAPSHOT</version>
-    <name>wisvch-connect-parent</name>
-
-    <modules>
-        <module>wisvch-connect-overlay</module>
-        <module>wisvch-connect-common</module>
-        <module>wisvch-connect-client</module>
-    </modules>
+    <artifactId>wisvch-connect</artifactId>
+    <name>wisvch-connect</name>
+    <packaging>war</packaging>
+    <version>dev</version>
 
     <properties>
         <java-version>1.8</java-version>
@@ -20,35 +32,69 @@
     </properties>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
-                    <configuration>
-                        <source>${java-version}</source>
-                        <target>${java-version}</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <tagNameFormat>v@{project.version}</tagNameFormat>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
+        <finalName>connect</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <overlays>
+                        <overlay>
+                            <groupId>org.mitre</groupId>
+                            <artifactId>openid-connect-server-webapp</artifactId>
+                            <excludes>
+                                <exclude>WEB-INF/lib/slf4j-log4j12-*.jar</exclude>
+                            </excludes>
+                        </overlay>
+                    </overlays>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/*.tag</include>
+                                <include>**/*.jsp</include>
+                            </includes>
+                        </resource>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>false</filtering>
+                            <excludes>
+                                <exclude>**/*.tag</exclude>
+                                <exclude>**/*.jsp</exclude>
+                            </excludes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.3.5.v20151012</version>
+            </plugin>
+        </plugins>
     </build>
 
-    <scm>
-        <connection>scm:git:https://github.com/WISVCH/connect.git</connection>
-        <developerConnection>scm:git:git@github.com:WISVCH/connect.git</developerConnection>
-        <url>https://github.com/WISVCH/connect</url>
-        <tag>HEAD</tag>
-    </scm>
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-wisvch-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/wisvch/maven</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -83,10 +129,94 @@
         </dependencies>
     </dependencyManagement>
 
-    <distributionManagement>
-        <repository>
-            <id>bintray</id>
-            <url>https://api.bintray.com/maven/wisvch/maven/wisvch-connect/;publish=1</url>
-        </repository>
-    </distributionManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.mitre</groupId>
+            <artifactId>openid-connect-server-webapp</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.mitre</groupId>
+            <artifactId>openid-connect-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mitre</groupId>
+            <artifactId>openid-connect-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security.extensions</groupId>
+            <artifactId>spring-security-saml2-core</artifactId>
+            <version>1.0.3.RELEASE</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.wisv</groupId>
+            <artifactId>dienst2-api-client-java</artifactId>
+            <version>0.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.4-1203-jdbc42</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datadoghq</groupId>
+            <artifactId>dd-trace-api</artifactId>
+            <version>0.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-api</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentracing</groupId>
+            <artifactId>opentracing-util</artifactId>
+            <version>0.31.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+    </dependencies>
 </project>

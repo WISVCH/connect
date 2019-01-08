@@ -1,14 +1,17 @@
-sudo: required
+language: minimal
 services:
-- docker
-# At least Docker 17.05 is needed for multi-stage builds, so upgrade
-before_install:
-  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-  - sudo apt-get update
-  - sudo apt-get -y install docker-ce
+  - docker
 script:
-- docker build .
+  - docker build --no-cache --pull --build-arg VERSION=$TRAVIS_BUILD_NUMBER -t quay.io/wisvch/connect:$TRAVIS_BUILD_NUMBER .
+deploy:
+  provider: script
+  script: >-
+    sh -c '
+    docker login -u "$QUAY_USERNAME" -p "$QUAY_PASSWORD" quay.io;
+    docker push quay.io/wisvch/connect:$TRAVIS_BUILD_NUMBER;
+    '
+  on:
+    branch: master
 notifications:
   email: false
   slack:
