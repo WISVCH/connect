@@ -17,4 +17,4 @@
   ~ limitations under the License.
   --%>
 
-<spring:message code="copyright" arguments="${project.version}"/>
+<spring:message code="copyright" arguments="Build ${project.version}"/>
