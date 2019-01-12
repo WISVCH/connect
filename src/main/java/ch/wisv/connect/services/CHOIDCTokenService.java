@@ -38,8 +38,10 @@ public class CHOIDCTokenService extends DefaultOIDCTokenService {
 
     @Override
     protected void addCustomIdTokenClaims(JWTClaimsSet.Builder idClaims, ClientDetailsEntity client, OAuth2Request request, String sub, OAuth2AccessTokenEntity accessToken) {
-        Set<String> ldapGroups = chUserDetailsService.loadUserBySubject(sub).getLdapGroups();
-        idClaims.claim("ldap_groups", ldapGroups);
+        if (request.getScope().contains("ldap")) {
+            Set<String> ldapGroups = chUserDetailsService.loadUserBySubject(sub).getLdapGroups();
+            idClaims.claim("ldap_groups", ldapGroups);
+        }
     }
 
 }
