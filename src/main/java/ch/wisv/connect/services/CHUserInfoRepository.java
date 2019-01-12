@@ -89,7 +89,10 @@ public class CHUserInfoRepository implements UserInfoRepository {
         ui.setLdapUsername(person.getLdapUsername());
         ui.setLdapGroups(userDetails.getLdapGroups());
         ui.setNetid(person.getNetid());
-        ui.setStudentNumber(person.getStudent().map(Student::getStudentNumber).orElse(null));
+        if (person.getStudent().map(Student::isEnrolled).orElse(false)) {
+            ui.setStudentNumber(person.getStudent().map(Student::getStudentNumber).orElse(null));
+            ui.setStudy(person.getStudent().map(Student::getStudy).orElse(null));
+        }
         return ui;
     }
 }

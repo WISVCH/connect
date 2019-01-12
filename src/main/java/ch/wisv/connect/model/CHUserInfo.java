@@ -34,6 +34,7 @@ import java.util.Set;
 public class CHUserInfo extends DefaultUserInfo {
     private String netid;
     private String studentNumber;
+    private String study;
     private String ldapUsername;
     private Set<String> ldapGroups;
 
@@ -58,6 +59,14 @@ public class CHUserInfo extends DefaultUserInfo {
 
     public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
+    }
+
+    public String getStudy() {
+        return study;
+    }
+
+    public void setStudy(String study) {
+        this.study = study;
     }
 
     public String getLdapUsername() {
@@ -93,6 +102,7 @@ public class CHUserInfo extends DefaultUserInfo {
 
             obj.addProperty("netid", this.getNetid());
             obj.addProperty("student_number", this.getStudentNumber());
+            obj.addProperty("study", this.getStudy());
             obj.addProperty("ldap_username", this.getLdapUsername());
             obj.add("ldap_groups", gson.toJsonTree(ldapGroups));
 
@@ -129,6 +139,7 @@ public class CHUserInfo extends DefaultUserInfo {
 
         ui.setNetid(nullSafeGetString(obj, "netid"));
         ui.setStudentNumber(nullSafeGetString(obj, "student_number"));
+        ui.setStudy(nullSafeGetString(obj, "study"));
         ui.setLdapUsername(nullSafeGetString(obj, "ldap_username"));
         ui.setLdapGroups(gson.fromJson(obj.get("ldap_groups"), stringSetType));
 
@@ -147,12 +158,13 @@ public class CHUserInfo extends DefaultUserInfo {
         CHUserInfo that = (CHUserInfo) o;
         return Objects.equals(netid, that.netid) &&
                 Objects.equals(studentNumber, that.studentNumber) &&
+                Objects.equals(study, that.study) &&
                 Objects.equals(ldapUsername, that.ldapUsername) &&
                 Objects.equals(ldapGroups, that.ldapGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), netid, studentNumber, ldapUsername, ldapGroups);
+        return Objects.hash(super.hashCode(), netid, studentNumber, study, ldapUsername, ldapGroups);
     }
 }

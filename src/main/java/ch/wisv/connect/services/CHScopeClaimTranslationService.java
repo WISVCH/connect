@@ -71,7 +71,7 @@ public class CHScopeClaimTranslationService implements ScopeClaimTranslationServ
 
         scopesToClaims.put("student", "netid");
         scopesToClaims.put("student", "student_number");
-
+        scopesToClaims.put("student", "study");
     }
 
     @Override
