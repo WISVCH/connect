@@ -15,8 +15,7 @@ RUN chmod 0644 /usr/local/share/ca-certificates/wisvch.crt && update-ca-certific
 
 ADD https://search.maven.org/remote_content?g=com.datadoghq&a=dd-java-agent&v=LATEST /opt/datadog/dd-java-agent.jar
 RUN chmod 0644 /opt/datadog/dd-java-agent.jar
-ENV CATALINA_OPTS="-javaagent:/opt/datadog/dd-java-agent.jar"
-ENV DD_SERVICE_NAME="connect"
+ENV CATALINA_OPTS="-javaagent:/opt/datadog/dd-java-agent.jar -Ddd.service.name=connect"
 
 COPY context.xml /usr/local/tomcat/conf/context.xml
 COPY --from=builder /src/target/connect.war /usr/local/tomcat/webapps/ROOT.war

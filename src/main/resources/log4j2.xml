@@ -20,7 +20,7 @@
 <Configuration>
     <Appenders>
         <Console name="STDOUT" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{ISO8601} %p [%t] %C{2} (%F:%L)%X{ddTraceID}%X{ddSpanID} %m%n"/>
+            <JSONLayout compact="true" eventEol="true" properties="true"/>
         </Console>
     </Appenders>
     <Loggers>

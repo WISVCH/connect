@@ -27,15 +27,18 @@ import java.io.IOException;
 
 @Component
 public class TraceRequestFilter implements Filter {
+    private static final String TRACE_ID_KEY = "dd.trace_id";
+    private static final String SPAN_ID_KEY = "dd.span_id";
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         try {
-            ThreadContext.put("ddTraceID", " ddTraceID:" + CorrelationIdentifier.getTraceId());
-            ThreadContext.put("ddSpanID", " ddSpanID:" + CorrelationIdentifier.getSpanId());
+            ThreadContext.put(TRACE_ID_KEY, CorrelationIdentifier.getTraceId());
+            ThreadContext.put(SPAN_ID_KEY, CorrelationIdentifier.getSpanId());
             chain.doFilter(request, response);
         } finally {
-            ThreadContext.remove("ddTraceID");
-            ThreadContext.remove("ddSpanID");
+            ThreadContext.remove(TRACE_ID_KEY);
+            ThreadContext.remove(SPAN_ID_KEY);
         }
     }
 
