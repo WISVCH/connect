@@ -147,7 +147,7 @@ public class CHUserDetailsService implements UserDetailsService {
             }
         } else {
             // No matches: invalid member
-            log.warn("Invalid: no matches for netid={} studentNumber=", netid, studentNumber);
+            log.warn("Invalid: no dienst2 matches for netid={} studentNumber={}", netid, studentNumber);
             throw new CHInvalidMemberException();
         }
     }

@@ -41,6 +41,8 @@ import java.util.stream.Collectors;
  */
 public class CHAuthenticationProvider implements AuthenticationProvider {
     private static final Logger log = LoggerFactory.getLogger(CHAuthenticationProvider.class);
+    private static final String SAML_ATTRIBUTE_AFFILIATION = "urn:mace:dir:attribute-def:eduPersonAffiliation";
+    private static final String SAML_ATTRIBUTE_STUDENTNUMBER = "tudStudentNumber";
 
     @Autowired
     CHUserDetailsService userDetailService;
@@ -56,30 +58,30 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             List<Attribute> attributes = samlCredential.getAttributes();
             String username = authentication.getName();
             if (log.isDebugEnabled()) {
-                String attributesString = attributes.stream().map(Attribute::getName).map(n -> n + ": " +
-                        samlCredential.getAttributeAsString(n)).collect(Collectors.joining("; "));
-                log.debug("Authenticated via SAML: username={} attributes=[{}]", username,
-                        attributesString);
+                String attributesString = attributes.stream().map(Attribute::getName).map(n ->
+                        String.format("%s=\"%s\"", n, samlCredential.getAttributeAsString(n)))
+                        .collect(Collectors.joining(" "));
+                log.info("Authenticated via SAML: username={} {}", username, attributesString);
             }
 
             if (!username.endsWith("@tudelft.nl")) {
-                log.warn("Unsupported username suffix; username={}", username);
+                log.warn("Unsupported SAML username suffix: username={}", username);
                 throw new CHInvalidMemberException();
             }
             String netid = username.substring(0, username.indexOf('@'));
 
             CHUserDetails userDetails;
-            String affiliation = samlCredential.getAttributeAsString("urn:mace:dir:attribute-def:eduPersonAffiliation");
+            String affiliation = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_AFFILIATION);
             switch (affiliation) {
                 case "student":
-                    String studentNumber = samlCredential.getAttributeAsString("tudStudentNumber");
+                    String studentNumber = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_STUDENTNUMBER);
                     userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
                     break;
                 case "employee":
                     userDetails = userDetailService.loadUserByNetid(netid);
                     break;
                 default:
-                    log.warn("Unsupported affiliation; affiliation={}", affiliation);
+                    log.warn("Unsupported SAML affiliation: affiliation={}", affiliation);
                     throw new CHInvalidMemberException();
             }
 
@@ -87,7 +89,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
         } else if (principal instanceof LdapUserDetails) {
             LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
             String ldapUsername = ldapUserDetails.getUsername();
-            log.debug("Authenticated via LDAP: username={}", ldapUsername);
+            log.info("Authenticated via LDAP: username={}", ldapUsername);
 
             CHUserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
