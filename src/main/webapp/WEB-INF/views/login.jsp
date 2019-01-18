@@ -34,6 +34,22 @@
     //-->
 </script>
 <o:topbar/>
+<style type="text/css">
+    form {
+        margin: 0;
+    }
+
+    @media (min-width: 768px) {
+        .col-container {
+            display: flex;
+            width: 100%;
+        }
+
+        .col {
+            flex: 1;
+        }
+    }
+</style>
 <div class="container-fluid main">
 
     <c:if test="${ param.error != null }">
@@ -64,8 +80,8 @@
         </div>
     </c:if>
 
-    <div class="row-fluid">
-        <div class="span6 well" style="height: 15em">
+    <div class="col-container">
+        <div class="span6 well col">
             <h2>Log in with CH Account</h2>
 
             <form action="${pageContext.request.contextPath}/ldap/login" method="POST">
@@ -91,7 +107,7 @@
             </form>
         </div>
 
-        <div class="span6 well" style="height: 15em">
+        <div class="span6 well col">
             <h2>Log in with TU Delft NetID</h2>
 
             <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">
