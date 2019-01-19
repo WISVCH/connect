@@ -1,4 +1,4 @@
-# WISVCH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)][travis] [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][quay]
+# CH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)][travis] [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][quay]
 
 [OpenID Connect][oidc] for W.I.S.V. 'Christiaan Huygens'.
 
