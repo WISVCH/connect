@@ -85,17 +85,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-wisvch-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/wisvch/maven</url>
-        </repository>
-    </repositories>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -166,11 +155,6 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.wisv</groupId>
-            <artifactId>dienst2-api-client-java</artifactId>
-            <version>0.0.9</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
