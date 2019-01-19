@@ -43,6 +43,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     private static final Logger log = LoggerFactory.getLogger(CHAuthenticationProvider.class);
     private static final String SAML_ATTRIBUTE_AFFILIATION = "urn:mace:dir:attribute-def:eduPersonAffiliation";
     private static final String SAML_ATTRIBUTE_STUDENTNUMBER = "tudStudentNumber";
+    private static final String SAML_ATTRIBUTE_DEPARTMENT = "tudAdsDepartment";
 
     @Autowired
     CHUserDetailsService userDetailService;
@@ -75,7 +76,8 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             switch (affiliation) {
                 case "student":
                     String studentNumber = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_STUDENTNUMBER);
-                    userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber);
+                    String study = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_DEPARTMENT);
+                    userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber, study);
                     break;
                 case "employee":
                     userDetails = userDetailService.loadUserByNetid(netid);

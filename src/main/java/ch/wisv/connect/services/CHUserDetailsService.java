@@ -86,22 +86,21 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Look up user by NetID and/or student number.
+     * Look up user by NetID and student number.
      * <p>
-     * Objects from Dienst2 are checked for conflicts: if both NetID and student number are set, they need to match our
-     * parameters. If either is set, we check for conflicting matches.
-     * <p>
-     * This code assumes exact matching and uniqueness constraints for NetID and student number in Dienst2.
+     * Objects from Dienst2 are checked for conflicts. This code assumes exact matching and uniqueness constraints for
+     * NetID and student number in Dienst2.
      *
      * @param netid         NetID to look for
-     * @param studentNumber Student number to be matched
+     * @param studentNumber Student number to look for
+     * @param study         Study to write back to Dienst2
      * @return user details object
-     * @throws CHAuthenticationException
+     * @throws CHAuthenticationException when membership could not be validated
      */
     @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
-    public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber) throws
+    public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber, String study) throws
             CHAuthenticationException {
         Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid must not be blank");
         Preconditions.checkArgument(StringUtils.isNotBlank(studentNumber), "studentNumber must not be blank");
@@ -109,17 +108,26 @@ public class CHUserDetailsService implements UserDetailsService {
         log.debug("Loading user by {}", meta);
 
         Optional<Person> personFromNetid = dienst2Repository.getPersonFromNetid(netid);
-        Optional<Person> personFromStudentNumber = StringUtils.isNotBlank(studentNumber) ?
-                dienst2Repository.getPersonFromStudentNumber(studentNumber) : Optional.empty();
+
+        // If this person also has the student number we are looking for we can be sure that there is no conflict on
+        // student number, due to the uniqueness constraint on student number in Dienst2. This saves us a REST request
+        // to Dienst2. Else, we do have to look up by student number in Dienst2.
+        boolean matchesStudentNumber = personFromNetid.flatMap(Person::getStudent)
+                .map(Student::getStudentNumber)
+                .map(s -> s.equals(studentNumber))
+                .orElse(false);
+        Optional<Person> personFromStudentNumber = matchesStudentNumber ? personFromNetid :
+                dienst2Repository.getPersonFromStudentNumber(studentNumber);
 
         if (personFromNetid.isPresent() && personFromStudentNumber.isPresent()) {
             Person person = verifyMembership(personFromNetid, meta);
             if (personFromStudentNumber.get().getId() != personFromNetid.get().getId()) {
-                // We have two different matches: conflict
+                // NetID and student number match a different person: conflict
                 log.warn("Conflict: dienst2personId={} matching student number is not dienst2PersonId={} matching NetID",
                         personFromStudentNumber.get().getId(), personFromNetid.get().getId());
                 throw new CHMemberConflictException();
             } else {
+                // TODO: write back study to Dienst2
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromNetid.isPresent()) {
@@ -131,7 +139,7 @@ public class CHUserDetailsService implements UserDetailsService {
                         dienst2StudentNumber, studentNumber);
                 throw new CHMemberConflictException();
             } else {
-                // TODO: write back student number to Dienst2
+                // TODO: write back study and student number to Dienst2
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromStudentNumber.isPresent()) {
@@ -142,7 +150,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 log.warn("Conflict: dienst2Netid={} does not match samlNetid={}", dienst2Netid, netid);
                 throw new CHMemberConflictException();
             } else {
-                // TODO: write back NetID to Dienst2
+                // TODO: write back study and NetID to Dienst2
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else {
@@ -157,7 +165,7 @@ public class CHUserDetailsService implements UserDetailsService {
      *
      * @param netid NetID to look for
      * @return user details object
-     * @throws CHAuthenticationException
+     * @throws CHAuthenticationException when membership could not be validated
      */
     @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
