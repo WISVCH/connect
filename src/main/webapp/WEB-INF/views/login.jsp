@@ -64,6 +64,10 @@
         .col {
             flex: 1;
         }
+
+        .col:first-child {
+            margin-left: 0;
+        }
     }
 </style>
 <div class="container-fluid main">
