@@ -1,3 +1,19 @@
+/*
+ * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ch.wisv.dienst2.apiclient.util;
 
 import ch.wisv.dienst2.apiclient.model.Person;
@@ -16,17 +32,18 @@ import java.util.Optional;
  */
 @SuppressWarnings("unused")
 public class Dienst2Repository {
+    public static final ParameterizedTypeReference<Results<Person>> PERSON_RESULT_TYPE = new
+            ParameterizedTypeReference<Results<Person>>() {
+            };
     private RestTemplate restTemplate;
     private String baseUrl;
+    private String personBaseurl;
 
     public Dienst2Repository(RestTemplate restTemplate, String baseUrl) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
+        this.personBaseurl = baseUrl + "/ldb/api/v3/people/{id}/";
     }
-
-    public static final ParameterizedTypeReference<Results<Person>> PERSON_RESULT_TYPE = new
-            ParameterizedTypeReference<Results<Person>>() {
-            };
 
     public Optional<Person> getPersonFromLdapUsername(String ldapUsername) {
         String url = baseUrl + "/ldb/api/v3/people/?ldap_username={username}";
@@ -50,9 +67,8 @@ public class Dienst2Repository {
     }
 
     public Optional<Person> getPerson(int id) {
-        String url = baseUrl + "/ldb/api/v3/people/{id}/";
         try {
-            return Optional.of(restTemplate.getForObject(url, Person.class, id));
+            return Optional.of(restTemplate.getForObject(personBaseurl, Person.class, id));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 return Optional.empty();
@@ -60,6 +76,10 @@ public class Dienst2Repository {
                 throw e;
             }
         }
+    }
+
+    public Optional<Person> patchPerson(int id, Person person) {
+        return Optional.of(restTemplate.patchForObject(personBaseurl, person, Person.class, id));
     }
 
     private <T> Optional<T> getAtMostOneResult(ResponseEntity<Results<T>> e) {

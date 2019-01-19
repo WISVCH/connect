@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +32,7 @@ import java.util.Map;
  * Spring Security ExceptionMappingAuthenticationFailureHandler with forward support
  */
 public class ExceptionMappingAuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
-    private final Map<String, String> failureUrlMap = new HashMap<String, String>();
+    private final Map<String, String> failureUrlMap = new HashMap<>();
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
@@ -43,10 +41,10 @@ public class ExceptionMappingAuthenticationFailureHandler extends SimpleUrlAuthe
 
         if (url != null) {
             if (isUseForward()) {
-                logger.debug("Forwarding to " + url);
+                logger.debug("Authentication failure, forwarding to " + url);
                 request.getRequestDispatcher(url).forward(request, response);
             } else {
-                logger.debug("Redirecting to " + url);
+                logger.debug("Authentication failure, redirecting to " + url);
                 getRedirectStrategy().sendRedirect(request, response, url);
             }
         } else {

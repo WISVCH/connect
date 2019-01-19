@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +16,7 @@
 
 package ch.wisv.dienst2.apiclient.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -43,13 +42,14 @@ public class Dienst2RestTemplateFactoryBean implements FactoryBean<RestTemplate>
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         restTemplate.setInterceptors(Collections.singletonList(new ApiTokenHttpRequestInterceptor(apiToken)));
-        restTemplate.setMessageConverters(Collections.singletonList(snakeCaseConverter()));
+        restTemplate.setMessageConverters(Collections.singletonList(jacksonMessageConverter()));
         return restTemplate;
     }
 
-    private static MappingJackson2HttpMessageConverter snakeCaseConverter() {
+    private static MappingJackson2HttpMessageConverter jacksonMessageConverter() {
         Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
         builder.propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        builder.serializationInclusion(JsonInclude.Include.NON_ABSENT);
 
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         converter.setObjectMapper(builder.build());

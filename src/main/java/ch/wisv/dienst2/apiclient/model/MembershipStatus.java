@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +37,6 @@ public enum MembershipStatus {
         this.value = value;
     }
 
-    @JsonValue
-    public int getValue() {
-        return value;
-    }
-
     @JsonCreator
     public static MembershipStatus forValue(int value) {
         for (MembershipStatus membershipStatus : MembershipStatus.values()) {
@@ -52,5 +45,10 @@ public enum MembershipStatus {
             }
         }
         throw new IllegalArgumentException("Invalid MembershipStatus value: " + value);
+    }
+
+    @JsonValue
+    public int getValue() {
+        return value;
     }
 }

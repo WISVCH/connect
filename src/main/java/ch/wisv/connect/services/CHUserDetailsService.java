@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +41,7 @@ import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.SearchControls;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,16 +57,16 @@ public class CHUserDetailsService implements UserDetailsService {
 
     private static final Pattern subjectPattern = Pattern.compile(CHUserDetails.SUBJECT_PREFIX + "(\\d+)");
 
-    @Autowired
-    private Dienst2Repository dienst2Repository;
+    private final Dienst2Repository dienst2Repository;
     private final SpringSecurityLdapTemplate ldapTemplate;
 
     @Autowired
-    public CHUserDetailsService(LdapContextSource contextSource) {
-        ldapTemplate = new SpringSecurityLdapTemplate(contextSource);
+    public CHUserDetailsService(LdapContextSource contextSource, Dienst2Repository dienst2Repository) {
+        this.ldapTemplate = new SpringSecurityLdapTemplate(contextSource);
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        ldapTemplate.setSearchControls(searchControls);
+        this.ldapTemplate.setSearchControls(searchControls);
+        this.dienst2Repository = dienst2Repository;
     }
 
     @Trace
@@ -121,13 +117,13 @@ public class CHUserDetailsService implements UserDetailsService {
 
         if (personFromNetid.isPresent() && personFromStudentNumber.isPresent()) {
             Person person = verifyMembership(personFromNetid, meta);
-            if (personFromStudentNumber.get().getId() != personFromNetid.get().getId()) {
+            if (!personFromStudentNumber.get().getId().equals(personFromNetid.get().getId())) {
                 // NetID and student number match a different person: conflict
                 log.warn("Conflict: dienst2personId={} matching student number is not dienst2PersonId={} matching NetID",
                         personFromStudentNumber.get().getId(), personFromNetid.get().getId());
                 throw new CHMemberConflictException();
             } else {
-                // TODO: write back study to Dienst2
+                person = updateDienst2(person, netid, studentNumber, study);
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromNetid.isPresent()) {
@@ -139,7 +135,7 @@ public class CHUserDetailsService implements UserDetailsService {
                         dienst2StudentNumber, studentNumber);
                 throw new CHMemberConflictException();
             } else {
-                // TODO: write back study and student number to Dienst2
+                person = updateDienst2(person, netid, studentNumber, study);
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else if (personFromStudentNumber.isPresent()) {
@@ -150,7 +146,7 @@ public class CHUserDetailsService implements UserDetailsService {
                 log.warn("Conflict: dienst2Netid={} does not match samlNetid={}", dienst2Netid, netid);
                 throw new CHMemberConflictException();
             } else {
-                // TODO: write back study and NetID to Dienst2
+                person = updateDienst2(person, netid, studentNumber, study);
                 return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
             }
         } else {
@@ -227,6 +223,43 @@ public class CHUserDetailsService implements UserDetailsService {
             throw new CHInvalidMemberException();
         }
         return p;
+    }
+
+    @Trace
+    private Person updateDienst2(Person person, String netid, String studentNumber, String study) {
+        Person patch = new Person();
+        List<String> diff = new ArrayList<>(3);
+        if (!netid.equals(person.getNetid())) {
+            patch.setNetid(netid);
+            diff.add("NetID");
+        }
+        if (!person.getStudent().map(Student::getStudentNumber).map(s -> s.equals(studentNumber)).orElse(false)) {
+            Student s = new Student();
+            patch.setStudent(s);
+            s.setStudentNumber(studentNumber);
+            diff.add("student number");
+        }
+        if (!person.getStudent().map(Student::getStudy).map(s -> s.equals(study)).orElse(false)) {
+            Student s = patch.getStudent().orElse(new Student());
+            patch.setStudent(s);
+            s.setStudy(study);
+            diff.add("study");
+        }
+        if (diff.isEmpty()) {
+            log.debug("Dienst2 already up to date");
+            return person;
+        }
+
+        String revisionComment = "Update " + String.join(", ", diff) + " from NetID login";
+        log.debug("Updating person {} in Dienst2: {}", person.getId(), revisionComment);
+        patch.setRevisionComment(revisionComment);
+
+        try {
+            return dienst2Repository.patchPerson(person.getId(), patch).orElse(person);
+        } catch (Exception e) {
+            log.warn("Could not update Dienst2 from NetID login", e);
+            return person;
+        }
     }
 
     public abstract static class CHAuthenticationException extends UsernameNotFoundException {

@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

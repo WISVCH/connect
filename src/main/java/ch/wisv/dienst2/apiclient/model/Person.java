@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +16,10 @@
 
 package ch.wisv.dienst2.apiclient.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.net.URI;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,40 +39,16 @@ public class Person extends Entity implements Serializable {
 
     private String gender;
     private LocalDate birthdate;
-    private boolean deceased;
-    private URI livingWith;
-
-    private boolean mailAnnouncements;
-    private boolean mailCompany;
 
     private String ldapUsername;
     private String netid;
-    private String facebookId;
 
     private MembershipStatus membershipStatus;
 
-    private Member member;
     private Student student;
-    private Alumnus alumnus;
-    private Employee employee;
-
-    @JsonProperty("committee_memberships")
-    private List<CommitteeMembership> committeeMemberships;
 
     public String getFormattedName() {
         return formattedName;
-    }
-
-    public List<CommitteeMembership> getCommitteeMemberships() {
-        return committeeMemberships;
-    }
-
-    public String getTitles() {
-        return titles;
-    }
-
-    public String getInitials() {
-        return initials;
     }
 
     public String getFirstname() {
@@ -100,10 +71,6 @@ public class Person extends Entity implements Serializable {
         }
     }
 
-    public String getPostfixTitles() {
-        return postfixTitles;
-    }
-
     public String getPhoneMobile() {
         return phoneMobile;
     }
@@ -116,22 +83,6 @@ public class Person extends Entity implements Serializable {
         return birthdate;
     }
 
-    public boolean isDeceased() {
-        return deceased;
-    }
-
-    public Optional<URI> getLivingWith() {
-        return Optional.ofNullable(livingWith);
-    }
-
-    public boolean isMailAnnouncements() {
-        return mailAnnouncements;
-    }
-
-    public boolean isMailCompany() {
-        return mailCompany;
-    }
-
     public String getLdapUsername() {
         return ldapUsername;
     }
@@ -140,32 +91,20 @@ public class Person extends Entity implements Serializable {
         return netid;
     }
 
-    public String getFacebookId() {
-        return facebookId;
+    public void setNetid(String netid) {
+        this.netid = netid;
     }
 
     public MembershipStatus getMembershipStatus() {
         return membershipStatus;
     }
 
-    public Optional<Member> getMember() {
-        return Optional.ofNullable(member);
-    }
-
     public Optional<Student> getStudent() {
         return Optional.ofNullable(student);
     }
 
-    public Optional<Alumnus> getAlumnus() {
-        return Optional.ofNullable(alumnus);
-    }
-
-    public Optional<Employee> getEmployee() {
-        return Optional.ofNullable(employee);
-    }
-
-    public List<CommitteeMembership> getCommittees() {
-        return committeeMemberships;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
     @Override
@@ -180,9 +119,7 @@ public class Person extends Entity implements Serializable {
             return false;
         }
         Person person = (Person) o;
-        return Objects.equals(deceased, person.deceased) &&
-                Objects.equals(mailAnnouncements, person.mailAnnouncements) &&
-                Objects.equals(mailCompany, person.mailCompany) &&
+        return Objects.equals(formattedName, person.formattedName) &&
                 Objects.equals(titles, person.titles) &&
                 Objects.equals(initials, person.initials) &&
                 Objects.equals(firstname, person.firstname) &&
@@ -192,22 +129,14 @@ public class Person extends Entity implements Serializable {
                 Objects.equals(phoneMobile, person.phoneMobile) &&
                 Objects.equals(gender, person.gender) &&
                 Objects.equals(birthdate, person.birthdate) &&
-                Objects.equals(livingWith, person.livingWith) &&
                 Objects.equals(ldapUsername, person.ldapUsername) &&
                 Objects.equals(netid, person.netid) &&
-                Objects.equals(facebookId, person.facebookId) &&
-                Objects.equals(member, person.member) &&
-                Objects.equals(student, person.student) &&
-                Objects.equals(alumnus, person.alumnus) &&
-                Objects.equals(employee, person.employee) &&
-                Objects.equals(committeeMemberships, person.committeeMemberships);
+                membershipStatus == person.membershipStatus &&
+                Objects.equals(student, person.student);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), titles, initials, firstname, preposition, surname, postfixTitles,
-                phoneMobile, gender, birthdate, deceased, livingWith, mailAnnouncements, mailCompany, ldapUsername,
-                netid, facebookId, member, student, alumnus, employee, committeeMemberships);
+        return Objects.hash(super.hashCode(), formattedName, titles, initials, firstname, preposition, surname, postfixTitles, phoneMobile, gender, birthdate, ldapUsername, netid, membershipStatus, student);
     }
-
 }

@@ -1,7 +1,5 @@
 /*
  * Copyright 2019 W.I.S.V. 'Christiaan Huygens'
- * Copyright 2018 The MITRE Corporation
- *    and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +57,7 @@ public class Results<T> implements Serializable {
             return false;
         }
         Results<?> results1 = (Results<?>) o;
-        return Objects.equals(count, results1.count) &&
+        return count == results1.count &&
                 Objects.equals(next, results1.next) &&
                 Objects.equals(previous, results1.previous) &&
                 Objects.equals(results, results1.results);
