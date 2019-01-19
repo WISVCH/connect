@@ -26,11 +26,27 @@
 <script type="text/javascript">
     <!--
 
+    var checked = localStorage.getItem('alwaysUseNetid');
+    <c:if test="${ param.error == null && param.logout == null }">
+    if (checked) {
+        window.location.replace("${pageContext.request.contextPath}/saml/login");
+    }
+    </c:if>
+
     $(document).ready(function () {
         // select the appropriate field based on context
         $('#<c:out value="${ login_hint != null ? 'password' : 'username' }" />').focus();
-    });
 
+        var checkbox = $('#alwaysUseNetid');
+        checkbox.attr('checked', checked);
+        checkbox.change(function () {
+            if (this.checked) {
+                localStorage.setItem('alwaysUseNetid', true);
+            } else {
+                localStorage.removeItem('alwaysUseNetid');
+            }
+        });
+    });
     //-->
 </script>
 <o:topbar/>
@@ -102,7 +118,7 @@
                 </div>
                 <div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <input type="submit" class="btn" value="Login" name="submit">
+                    <input type="submit" class="btn" value="Log in" name="submit">
                 </div>
             </form>
         </div>
@@ -111,8 +127,17 @@
             <h2>Log in with TU Delft NetID</h2>
 
             <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">
-                Login with TU Delft NetID
+                Log in with TU Delft NetID
             </a></div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" id="alwaysUseNetid" value="true"/>
+                        Always log in with NetID on this device
+                    </label>
+                </div>
+            </div>
         </div>
     </div>
 </div>
