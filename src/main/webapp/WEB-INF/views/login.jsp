@@ -51,8 +51,20 @@
 </script>
 <o:topbar/>
 <style type="text/css">
+    h2 {
+        margin-top: 0;
+    }
+
     form {
         margin: 0;
+    }
+
+    .control-group {
+        margin: 1em 0 0;
+    }
+
+    input[type=checkbox] {
+        margin: -2px 0 0;
     }
 
     @media (min-width: 768px) {
@@ -67,6 +79,13 @@
 
         .col:first-child {
             margin-left: 0;
+        }
+    }
+
+    /* Prevent iOS from zooming on focus */
+    @media screen and (-webkit-min-device-pixel-ratio: 0) {
+        input[type='text'], input[type='password'] {
+            font-size: 16px;
         }
     }
 </style>
@@ -102,7 +121,7 @@
 
     <div class="col-container">
         <div class="span6 well col">
-            <h2>Log in with CH Account</h2>
+            <h2>Log in with CH&nbsp;Account</h2>
 
             <form action="${pageContext.request.contextPath}/ldap/login" method="POST">
                 <div>
@@ -128,7 +147,7 @@
         </div>
 
         <div class="span6 well col">
-            <h2>Log in with TU Delft NetID</h2>
+            <h2>Log in with TU&nbsp;Delft&nbsp;NetID</h2>
 
             <div><a href="${pageContext.request.contextPath}/saml/login" class="btn btn-info">
                 Log in with TU Delft NetID
@@ -136,7 +155,7 @@
 
             <div class="control-group">
                 <div class="controls">
-                    <label class="checkbox">
+                    <label class="checkbox-inline">
                         <input type="checkbox" id="alwaysUseNetid" value="true"/>
                         Always log in with NetID on this device
                     </label>
