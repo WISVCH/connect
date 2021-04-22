@@ -96,7 +96,7 @@ public class CHUserDetailsService implements UserDetailsService {
     @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
-    public CHUserDetails loadUserByNetidStudentNumber(String netid, String studentNumber, String study) throws
+    public CHUserDetails loadUserByNetidStudentNumberAndUpdateStudy(String netid, String studentNumber, String study) throws
             CHAuthenticationException {
         Preconditions.checkArgument(StringUtils.isNotBlank(netid), "netid must not be blank");
         Preconditions.checkArgument(StringUtils.isNotBlank(studentNumber), "studentNumber must not be blank");

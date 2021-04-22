@@ -42,6 +42,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     private static final String SAML_ATTRIBUTE_AFFILIATION = "urn:mace:dir:attribute-def:eduPersonAffiliation";
     private static final String SAML_ATTRIBUTE_STUDENTNUMBER = "tudStudentNumber";
     private static final String SAML_ATTRIBUTE_DEPARTMENT = "tudAdsDepartment";
+    private static final String SAML_ATTRIBUTE_NETID = "uid";
 
     @Autowired
     CHUserDetailsService userDetailService;
@@ -55,19 +56,14 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
         if (credentials instanceof SAMLCredential) {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
-            String username = authentication.getName();
+
+            String netid = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_NETID);
             if (log.isDebugEnabled()) {
                 String attributesString = attributes.stream().map(Attribute::getName).map(n ->
                         String.format("%s=\"%s\"", n, samlCredential.getAttributeAsString(n)))
                         .collect(Collectors.joining(" "));
-                log.info("Authenticated via SAML: username={} {}", username, attributesString);
+                log.info("Authenticated via SAML: netid={} {}", netid, attributesString);
             }
-
-            if (!username.endsWith("@tudelft.nl")) {
-                log.warn("Unsupported SAML username suffix: username={}", username);
-                throw new CHInvalidMemberException();
-            }
-            String netid = username.substring(0, username.indexOf('@'));
 
             CHUserDetails userDetails;
             String affiliation = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_AFFILIATION);
@@ -75,7 +71,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                 case "student":
                     String studentNumber = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_STUDENTNUMBER);
                     String study = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_DEPARTMENT);
-                    userDetails = userDetailService.loadUserByNetidStudentNumber(netid, studentNumber, study);
+                    userDetails = userDetailService.loadUserByNetidStudentNumberAndUpdateStudy(netid, studentNumber, study);
                     break;
                 case "employee":
                     userDetails = userDetailService.loadUserByNetid(netid);
