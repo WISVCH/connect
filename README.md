@@ -1,4 +1,4 @@
-# CH Connect [![Build Status](https://travis-ci.org/WISVCH/connect.svg)][travis] [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][quay]
+# CH Connect [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][quay]
 
 [OpenID Connect][oidc] for W.I.S.V. 'Christiaan Huygens'.
 
@@ -38,10 +38,10 @@ Building:
 docker build .
 ```
 
-Production images are built by [Travis][travis] and can be downloaded from [Quay][quay].
+Production images are built using a [GitHub Actions workflow][gh-actions] and can be downloaded from [Quay][quay].
 
 [quay]: https://quay.io/repository/wisvch/connect "Docker Repository on Quay"
-[travis]: https://travis-ci.org/WISVCH/connect "Travis"
+[gh-actions]: https://github.com/WISVCH/connect/actions "GitHub Actions workflow"
 [oidc]: http://openid.net/connect/ "OpenID Connect"
 [dienst2]: https://github.com/WISVCH/dienst2 "Dienst2"
 [prod]: https://connect.ch.tudelft.nl/ "CH Connect"
