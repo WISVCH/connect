@@ -5,7 +5,7 @@
   "contact": {
     "body": "To report bugs with the CH Connect software itself, use the \n<a href=\"https://github.com/WISVCH/connect/issues\">GitHub issue tracker</a>. \nFor problems relating to this server, contact <a href=\"mailto:beheer@ch.tudelft.nl?Subject=CH Connect\">CH Beheer</a>."
   },
-  "copyright": "Powered by <a href=\"https://github.com/WISVCH/connect/\">CH Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2019 W.I.S.V. ''Christiaan Huygens''</span>",
+  "copyright": "Powered by <a href=\"https://github.com/WISVCH/connect/\">CH Connect</a> <span class=\"pull-right\">&copy; 2021 W.I.S.V. ''Christiaan Huygens''</span>",
   "home": {
     "about": {
       "body": "This OpenID Connect service is built from the MITREid Connect Open Source project, and is customised by W.I.S.V. ''Christiaan Huygens''."
