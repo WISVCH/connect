@@ -1,4 +1,4 @@
-# CH Connect [![Docker Repository on Quay](https://quay.io/repository/wisvch/connect/status "Docker Repository on Quay")][quay]
+# CH Connect
 
 [OpenID Connect][oidc] for W.I.S.V. 'Christiaan Huygens'.
 
@@ -38,9 +38,11 @@ Building:
 docker build .
 ```
 
-Production images are built using a [GitHub Actions workflow][gh-actions] and can be downloaded from [Quay][quay].
+Production images are built using a [GitHub Actions workflow][gh-actions] and can be downloaded from the
+[GitHub Container Registry][ghcr].
 
-[quay]: https://quay.io/repository/wisvch/connect "Docker Repository on Quay"
+[ghcr]: https://github.com/WISVCH/connect/pkgs/container/connect "GitHub Container Registry"
+
 [gh-actions]: https://github.com/WISVCH/connect/actions "GitHub Actions workflow"
 [oidc]: http://openid.net/connect/ "OpenID Connect"
 [dienst2]: https://github.com/WISVCH/dienst2 "Dienst2"

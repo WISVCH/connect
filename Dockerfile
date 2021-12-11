@@ -22,5 +22,3 @@ COPY --from=builder /src/target/connect.war /usr/local/tomcat/webapps/ROOT.war
 
 RUN chown 998 /usr/local/tomcat/webapps /usr/local/tomcat/temp
 USER 998
-
-LABEL quay.expires-after=12w
