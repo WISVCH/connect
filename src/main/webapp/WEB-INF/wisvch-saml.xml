@@ -67,6 +67,7 @@
         <constructor-arg>
             <map>
                 <entry key="${saml.keyname}" value="${saml.keypass}"/>
+                <entry key="${saml2.keyname}" value="${saml2.keypass}"/>
             </map>
         </constructor-arg>
         <constructor-arg type="java.lang.String" value="${saml.keyname}"/>
@@ -134,6 +135,10 @@
                         </bean>
                     </constructor-arg>
                     <property name="metadataTrustCheck" value="false"/>
+                </bean>
+                <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                    <constructor-arg value="classpath:/GoogleIDPMetadata.xml"/>
+                    <property name="parserPool" ref="parserPool"/>
                 </bean>
             </list>
         </constructor-arg>
