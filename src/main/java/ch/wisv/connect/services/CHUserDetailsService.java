@@ -38,6 +38,7 @@ import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.ldap.SpringSecurityLdapTemplate;
+import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
 import javax.naming.directory.SearchControls;
@@ -79,6 +80,37 @@ public class CHUserDetailsService implements UserDetailsService {
         log.debug("Loading user by {}", meta);
         Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username), meta);
         return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
+    }
+    @Trace
+    @CachePut(cacheNames = "userDetails", key = "#result.subject")
+    @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
+    public CHUserDetails loadUserByGoogleCredential(SAMLCredential samlCredential) throws CHAuthenticationException {
+        String email = samlCredential.getNameID().getValue();
+        Preconditions.checkArgument(StringUtils.isNotBlank(email), "email must not be blank");
+
+        // The username is the email address without the domain
+        String username = email.split("@")[0];
+
+        String meta = "email=" + email + ", username=" + username;
+        log.debug("Loading user by {}", meta);
+        // Get the person from Dienst2
+        Person person = verifyMembership(dienst2Repository.getPersonFromGoogleUsername(username), meta);
+
+        Set<String> groups = new HashSet<>();
+        String[] rawGroups = samlCredential.getAttributeAsStringArray("groups");
+        if (rawGroups != null) {
+            // Loop over the values
+            for (String rawGroup : rawGroups) {
+                // Remove spaces and convert to lowercase
+                String group = rawGroup.replaceAll("\\s", "").toLowerCase();
+                log.debug("- Mapped '{}' to '{}'", rawGroup, group);
+                groups.add(group);
+            }
+        }
+
+        log.debug("Assigning groups to user: {}", groups);
+
+        return createUserDetailsWithGroups(person, CHUserDetails.AuthenticationSource.GOOGLE_SSO, groups);
     }
 
     /**
@@ -194,10 +226,12 @@ public class CHUserDetailsService implements UserDetailsService {
     }
 
     @Trace
-    private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
+    private CHUserDetails createUserDetailsWithGroups(Person person,
+                                                  CHUserDetails.AuthenticationSource authenticationSource,
+                                            Set<String> groups) {
         assert person != null;
         String ldapUsername = person.getLdapUsername();
-        Set<String> ldapGroups = Collections.emptySet();
+        Set<String> ldapGroups = groups;
         if (StringUtils.isNotEmpty(ldapUsername)) {
             Tracer tracer = GlobalTracer.get();
             try (Scope scope = tracer.buildSpan("GetLdapGroups").startActive(true)) {
@@ -208,6 +242,11 @@ public class CHUserDetailsService implements UserDetailsService {
             }
         }
         return new CHUserDetails(person, ldapGroups, authenticationSource);
+    }
+
+    @Trace
+    private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
+        return createUserDetailsWithGroups(person, authenticationSource, Collections.emptySet());
     }
 
     private Person verifyMembership(Optional<Person> person, String meta) {

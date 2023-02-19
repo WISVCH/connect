@@ -48,8 +48,10 @@ public class CHUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // We do not fully trust TU Delft SSO, so we only grant admin authority if logged on through CH LDAP.
-        if (ldapGroups.contains("staff") && authenticationSource == AuthenticationSource.CH_LDAP) {
+        // We do not fully trust TU Delft SSO, so we only grant admin authority if logged on through CH LDAP or
+        // Google SSO
+        if (ldapGroups.contains("staff") && (authenticationSource == AuthenticationSource.CH_LDAP ||
+                authenticationSource == AuthenticationSource.GOOGLE_SSO)) {
             return ImmutableSet.of(ROLE_ADMIN, ROLE_USER);
         } else {
             return ImmutableSet.of(ROLE_USER);
@@ -99,6 +101,6 @@ public class CHUserDetails implements UserDetails {
     }
 
     public enum AuthenticationSource {
-        CH_LDAP, TU_SSO
+        CH_LDAP, TU_SSO, GOOGLE_SSO
     }
 }

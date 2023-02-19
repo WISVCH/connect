@@ -44,6 +44,8 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     private static final String SAML_ATTRIBUTE_DEPARTMENT = "tudAdsDepartment";
     private static final String SAML_ATTRIBUTE_NETID = "uid";
 
+    private static final String SAML_GOOGLE_ENTITY_ID = "https://accounts.google.com/o/saml2";
+
     @Autowired
     CHUserDetailsService userDetailService;
 
@@ -57,6 +59,19 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             SAMLCredential samlCredential = (SAMLCredential) credentials;
             List<Attribute> attributes = samlCredential.getAttributes();
 
+            // There are 2 SAML remotes: TU Delft and Google
+
+            // Check if the remote entity ID begins with "https://accounts.google.com/o/saml2", then it is Google
+
+            if (samlCredential.getRemoteEntityID().startsWith(SAML_GOOGLE_ENTITY_ID)) {
+                log.info("Authenticated via Google SAML: email={}", samlCredential.getNameID().getValue());
+                log.info("Remote entity ID: {}", samlCredential.getRemoteEntityID());
+                log.info("SAML attributes: {}", attributes.stream().map(Attribute::getName).collect(Collectors.joining(", ")));
+                CHUserDetails userDetails = userDetailService.loadUserByGoogleCredential(samlCredential);
+                return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
+            }
+
+            // Otherwise it is TU Delft
             String netid = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_NETID);
             if (log.isDebugEnabled()) {
                 String attributesString = attributes.stream().map(Attribute::getName).map(n ->
