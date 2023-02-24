@@ -67,7 +67,6 @@
         <constructor-arg>
             <map>
                 <entry key="${saml.keyname}" value="${saml.keypass}"/>
-                <entry key="${saml2.keyname}" value="${saml2.keypass}"/>
             </map>
         </constructor-arg>
         <constructor-arg type="java.lang.String" value="${saml.keyname}"/>
@@ -118,31 +117,45 @@
     <!-- The filter is waiting for connections on URL suffixed with filterSuffix and presents SP metadata there -->
     <bean id="metadataDisplayFilter" class="org.springframework.security.saml.metadata.MetadataDisplayFilter"/>
 
+
+    <!--    Configure Metadata Providers -->
+    <bean id="metadataHTTPProvider" class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+        <constructor-arg>
+            <bean class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
+                <constructor-arg>
+                    <value type="java.lang.String">${saml.idp_url}</value>
+                </constructor-arg>
+                <constructor-arg>
+                    <value type="int">5000</value>
+                </constructor-arg>
+                <property name="parserPool" ref="parserPool"/>
+            </bean>
+        </constructor-arg>
+        <property name="metadataTrustCheck" value="false"/>
+    </bean>
+    <bean id="metadataFileProvider" class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
+        <constructor-arg>
+            <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
+                <constructor-arg value="${saml2.idp_metadata}"/>
+                <property name="parserPool" ref="parserPool"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg>
+            <bean class="org.springframework.security.saml.metadata.ExtendedMetadata">
+                <property name="alias" value="saml2"/>
+            </bean>
+        </constructor-arg>
+        <property name="metadataTrustCheck" value="false"/>
+    </bean>
+
     <!-- IDP Metadata configuration - paths to metadata of IDPs in circle of trust is here -->
     <bean id="metadata" class="org.springframework.security.saml.metadata.CachingMetadataManager">
         <constructor-arg>
             <list>
-                <bean class="org.springframework.security.saml.metadata.ExtendedMetadataDelegate">
-                    <constructor-arg>
-                        <bean class="org.opensaml.saml2.metadata.provider.HTTPMetadataProvider">
-                            <constructor-arg>
-                                <value type="java.lang.String">${saml.idp_url}</value>
-                            </constructor-arg>
-                            <constructor-arg>
-                                <value type="int">5000</value>
-                            </constructor-arg>
-                            <property name="parserPool" ref="parserPool"/>
-                        </bean>
-                    </constructor-arg>
-                    <property name="metadataTrustCheck" value="false"/>
-                </bean>
-                <bean class="org.opensaml.saml2.metadata.provider.FilesystemMetadataProvider">
-                    <constructor-arg value="classpath:/GoogleIDPMetadata.xml"/>
-                    <property name="parserPool" ref="parserPool"/>
-                </bean>
+                <ref bean="metadataHTTPProvider"/>
+                <ref bean="metadataFileProvider"/>
             </list>
         </constructor-arg>
-        <property name="defaultIDP" value="${saml.idp_entity_id}"/>
         <property name="refreshCheckInterval" value="60000"/>
     </bean>
 
