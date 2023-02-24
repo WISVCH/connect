@@ -72,6 +72,7 @@
     </security:authentication-manager>
 
     <mvc:view-controller path="/login" view-name="login"/>
+    <mvc:redirect-view-controller path="/saml2/login" redirect-url="/saml/login?idp=${saml2.idp_entity_id}"/>
     <mvc:view-controller path="/error" view-name="error"/>
 
     <security:http authentication-manager-ref="authenticationManager">
