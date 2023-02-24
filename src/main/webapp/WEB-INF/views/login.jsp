@@ -143,9 +143,15 @@
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                     <input type="submit" class="btn" value="Log in" name="submit">
                 </div>
+                <div class="mt2">
+                    <p>or</p>
+                    <a href="${pageContext.request.contextPath}/saml2/login"
+                       class="btn btn-info">
+                        Log in with CH Google Account
+                    </a>
+                </div>
             </form>
         </div>
-
         <div class="span6 well col">
             <h2>Log in with TU&nbsp;Delft&nbsp;NetID</h2>
 
