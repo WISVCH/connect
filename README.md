@@ -15,16 +15,65 @@ by logging in there.
 
 This project is a WAR overlay for [MITREid Connect][upstream], which is included from Maven Central.
 
-Configuration is done through a properties file; refer to `config/application-example.properties` and make a copy as
-`config/application.properties`. An HSQLDB instance will be launched with demo data; to log in, use `admin:password`.
 
-The servlet container can be configured with the following parameters:
-```
--Dspring.config.location=$PROJECT_DIR$/config/application.properties
--Dlog4j.configurationFile=$PROJECT_DIR$/config/log4j2-dev.xml
--Djavax.net.ssl.trustStore=$PROJECT_DIR$/wisvch.truststore
--Djavax.net.ssl.trustStorePassword=changeit
-```
+### IntelliJ IDEA
+1. Install JDK 1.8: `File` > `Project Structure` > `Project SDK` > `+` > `Download` > `1.8` (`Cornetto` works)
+2. Set up the project: `File` > `Project Structure` > `Project` > `Project SDK` > `1.8` > `Apply`
+3. Copy `config/application-example.properties` to `config/application.properties` and make any necessary changes. An HSQLDB instance will be 
+   launched with demo data; to log in, use `admin:password`.
+4. To make sure the config is loaded we need to configure the servlet container with the following parameters:
+    ```
+    -Dspring.config.location=$PROJECT_DIR$/config/application.properties
+    -Dlog4j.configurationFile=$PROJECT_DIR$/config/log4j2-dev.xml
+    -Djavax.net.ssl.trustStore=$PROJECT_DIR$/wisvch.truststore
+    -Djavax.net.ssl.trustStorePassword=changeit
+    ```
+    where `$PROJECT_DIR$` is the path to the project.
+    These values can be places in `.mvn/jvm.config`. Or you can add them to the `VM options` in the `Run/Debug Configurations` dialog.
+5. Run the project with `mvn jetty:run` or via the Maven toolbar in IntelliJ IDEA.
+
+#### Setup HTTPS (Advanced)
+Some SAML clients require HTTPS. To enable HTTPS, you can follow the instructions below.
+1. Create a keystore with a self-signed certificate:
+    ```bash
+    keytool -genkey -alias jetty -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore jetty.p12 -validity 3650
+    ```
+2. Convert the keystore to a JKS keystore:
+    ```bash
+    keytool -importkeystore -srckeystore jetty.p12 -destkeystore jetty.jks -deststoretype JKS
+    ```
+3. Configure the keystore in `application.properties` by setting:
+    ```properties
+   server.ssl.key-keystore=jetty.jks
+   server.ssl.key-store-password=[YOUR KEYSTORE PASSWORD]
+   server.ssl.key-password=[YOUR KEY PASSWORD]
+    ```
+   and set the issuer URI to `https://localhost:8443/`:
+   ```properties
+   server.issuer=https://localhost:8443
+   server.port=8443
+   server.force_https=true
+    ```
+4. Edit `pom.xml` to configure the Jetty plugin:
+   ```xml
+   <plugin>
+       <groupId>org.eclipse.jetty</groupId>
+       <artifactId>jetty-maven-plugin</artifactId>
+       <version>9.3.5.v20151012</version>
+       <configuration>
+           <systemPropertiesFile>${project.basedir}/config/application.properties</systemPropertiesFile>
+           <jettyXml>jetty.xml</jettyXml>
+       </configuration>
+   </plugin>
+   ```
+   make sure that you do not commit this change.
+5. If you want to use Google SAML, you are not allowed to redirect traffic to localhost. You can use [ngrok](https://ngrok.com/) to
+   create a tunnel to your local machine. You can then use the ngrok URL as the issuer URI:
+    ```shell script
+    ngrok http https://localhost:8443 
+    ```
+
+
 ## Production
 
 Configure the location of the properties file with `-Dspring.config.location=/path/to/config/application.properties` as

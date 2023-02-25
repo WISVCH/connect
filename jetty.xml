@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+    <Call name="addConnector">
+        <Arg>
+            <New class="org.eclipse.jetty.server.ServerConnector">
+                <Arg name="server">
+                    <Ref refid="Server" />
+                </Arg>
+                <Arg name="sslContextFactory">
+                    <New class="org.eclipse.jetty.util.ssl.SslContextFactory">
+                        <Set name="keyStorePath"><SystemProperty name="SERVER_SSL_KEY-KEYSTORE" default="springboot.jks" /></Set>
+                        <Set name="keyStorePassword"><SystemProperty name="SERVER_SSL_KEY-STORE-PASSWORD" default="password" /></Set>
+                        <Set name="keyManagerPassword"><SystemProperty name="SERVER_SSL_KEY-PASSWORD" default="password" /></Set>
+                    </New>
+                </Arg>
+                <Set name="port"><SystemProperty name="SERVER_PORT" default="8443" /></Set>
+            </New>
+        </Arg>
+    </Call>
+
+</Configure>
