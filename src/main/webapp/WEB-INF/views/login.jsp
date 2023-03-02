@@ -21,233 +21,239 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+<!DOCTYPE html>
+<html lang="${pageContext.response.locale}">
+<head>
+    <base href="${config.issuer}">
+    <meta charset="utf-8">
+    <title>CH Connect - Log In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<base href="https://connect.ch.tudelft.nl">
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script src="resources/js/lib/html5.js"></script>
+    <![endif]-->
 
-<meta charset="utf-8">
-<title>CH Connect - Log In</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="">
-<meta name="author" content="">
+    <!-- favico -->
+    <link rel="shortcut icon" href="resources/images/mitreid-connect.ico">
 
-<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-<!--[if lt IE 9]>
-<script src="resources/js/lib/html5.js"></script>
-<![endif]-->
-
-<!-- favico -->
-<link rel="shortcut icon" href="resources/images/mitreid-connect.ico">
-
-<!-- Load jQuery up here so that we can use in-page functions -->
-<script type="text/javascript" src="resources/js/lib/jquery.js"></script>
-<script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
-<script type="text/javascript" src="resources/js/lib/i18next.js"></script>
-<script type="text/javascript">
-    $.i18n.init({
-        fallbackLng: "en",
-        lng: "en",
-        resGetPath: "resources/js/locale/__lng__/__ns__.json",
-        ns: {
-            namespaces: ["wisvch","messages"],
-            defaultNs: 'wisvch'
-        },
-        fallbackNS: ["wisvch","messages"]
-    });
-    moment.locale("en");
-    // safely set the title of the application
-    function setPageTitle(title) {
-        document.title = "CH Connect - " + title;
-    }
-
-    // get the info of the current user, if available (null otherwise)
-    function getUserInfo() {
-        return ;
-    }
-
-    // get the authorities of the current user, if available (null otherwise)
-    function getUserAuthorities() {
-        return ["ROLE_ANONYMOUS"];
-    }
-
-    // is the current user an admin?
-    // NOTE: this is just for
-    function isAdmin() {
-        var auth = getUserAuthorities();
-        if (auth && _.contains(auth, "ROLE_ADMIN")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    var heartMode = false;
-
-</script>
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<script type="text/javascript">
-    <!--
-
-    var checked = localStorage.getItem('alwaysUseNetid');
-    <c:if test="${ param.error == null && param.logout == null }">
-    if (checked) {
-        window.location.replace("${pageContext.request.contextPath}/saml/login");
-    }
-    </c:if>
-
-    $(document).ready(function () {
-        // select the appropriate field based on context
-        $('#<c:out value="${ login_hint != null ? 'password' : 'username' }" />').focus();
-
-        var checkbox = $('#alwaysUseNetid');
-        checkbox.attr('checked', checked);
-        checkbox.change(function () {
-            if (this.checked) {
-                localStorage.setItem('alwaysUseNetid', true);
-            } else {
-                localStorage.removeItem('alwaysUseNetid');
-            }
+    <!-- Load jQuery up here so that we can use in-page functions -->
+    <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
+    <script type="text/javascript" src="resources/js/lib/i18next.js"></script>
+    <script type="text/javascript">
+        $.i18n.init({
+            fallbackLng: "en",
+            lng: "en",
+            resGetPath: "resources/js/locale/__lng__/__ns__.json",
+            ns: {
+                namespaces: ["wisvch","messages"],
+                defaultNs: 'wisvch'
+            },
+            fallbackNS: ["wisvch","messages"]
         });
-    });
-    //-->
-</script>
+        moment.locale("en");
+        // safely set the title of the application
+        function setPageTitle(title) {
+            document.title = "CH Connect - " + title;
+        }
 
-<style>
-    :root{
-        --ch-black: rgb(0,0,0);
-        --ch-white: rgb(255,255,255);
-        --ch-indigo: rgb(0,39,74);
-        --ch-indigo-transparent: rgba(0,39,74,0.9);
-        --ch-blue: rgb(144,182,203);
-        --ch-blue-faded: rgba(144,182,203,0.5);
-        --ch-magenta: rgb(232,48,138);
-        --ch-orange: rgb(238,114,3);
-        --ch-orange-hover: rgb(238,114,3,0.85);
-        --ch-yellow: rgb(251, 187, 33);
-        --ch-turqoise: rgb(42, 161, 169);
+        // get the info of the current user, if available (null otherwise)
+        function getUserInfo() {
+            return ;
+        }
 
-        --animation-speed: 0.5s;
-    }
-    body  {
-        background-image: url("resources/images/FRZ01185.jpg");
-        backdrop-filter: blur(5px);
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-color: var(--ch-blue-faded);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .login-box {
-        padding-left: 30px;
-        padding-right: 30px;
-        padding-top: 20px;
-        padding-bottom: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        background-color: var(--ch-indigo-transparent);
-        color: var(--ch-white);
-        border-radius: 0.5em;
-    }
-    .other{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-    .login-with-btn {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        width: 100%;
-        transition: background-color var(--animation-speed), box-shadow var(--animation-speed), color var(--animation-speed);
-        padding: 12px;
-        margin-top: 15px;
-        border: none;
-        border-radius: 0.25rem;
-        color: #757575;
-        font-size: 14px;
-        font-weight: 500;
-    }
-    .login-with-btn:hover {
-        box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
-        background-color: var(--ch-orange);
-        color: white;
-        cursor: pointer;
-    }
-    .login-with-btn img{
-        height: calc(14px + 1em);
-        transition: filter var(--animation-speed);
-    }
-    .login-with-btn:hover img{
-        filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(2%) hue-rotate(151deg) brightness(106%) contrast(101%);
-    }
-    button{
-        background-color: var(--ch-white);
-    }
-    .chaccount{
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        width: 100%;
-    }
-    .btn-orange{
-        background-color: var(--ch-blue);
-        color: var(--ch-white);
-        margin-top: 30px;
-    }
-    .btn-orange:hover{
-        background-color: var(--ch-orange-hover);
-        color: var(--ch-white);
-    }
-    input:focus{
-        border-color: red;
-    }
-    @media only screen and (max-width: 576px) {
+        // get the authorities of the current user, if available (null otherwise)
+        function getUserAuthorities() {
+            return ["ROLE_ANONYMOUS"];
+        }
+
+        // is the current user an admin?
+        // NOTE: this is just for
+        function isAdmin() {
+            var auth = getUserAuthorities();
+            if (auth && _.contains(auth, "ROLE_ADMIN")) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        var heartMode = false;
+
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script type="text/javascript">
+        <!--
+
+        var checked = localStorage.getItem('alwaysUseNetid');
+        <c:if test="${ param.error == null && param.logout == null }">
+        if (checked) {
+            window.location.replace("${pageContext.request.contextPath}/saml/login");
+        }
+        </c:if>
+
+        $(document).ready(function () {
+            // select the appropriate field based on context
+            $('#<c:out value="${ login_hint != null ? 'password' : 'username' }" />').focus();
+
+            var checkbox = $('#alwaysUseNetid');
+            checkbox.attr('checked', checked);
+            checkbox.change(function () {
+                if (this.checked) {
+                    localStorage.setItem('alwaysUseNetid', true);
+                } else {
+                    localStorage.removeItem('alwaysUseNetid');
+                }
+            });
+        });
+        //-->
+    </script>
+
+    <style>
+        :root{
+            --ch-black: rgb(0,0,0);
+            --ch-white: rgb(255,255,255);
+            --ch-indigo: rgb(0,39,74);
+            --ch-indigo-transparent: rgba(0,39,74,0.9);
+            --ch-blue: rgb(144,182,203);
+            --ch-blue-faded: rgba(144,182,203,0.5);
+            --ch-magenta: rgb(232,48,138);
+            --ch-orange: rgb(238,114,3);
+            --ch-orange-hover: rgb(238,114,3,0.85);
+            --ch-yellow: rgb(251, 187, 33);
+            --ch-turqoise: rgb(42, 161, 169);
+
+            --animation-speed: 0.5s;
+        }
+        html, body {
+            min-height: 100vh;
+        }
+        body  {
+            background-image: url("resources/images/FRZ01185.jpg");
+            backdrop-filter: blur(5px);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: var(--ch-blue-faded);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         .login-box {
-            width: 83vw;
+            padding-left: 30px;
+            padding-right: 30px;
+            padding-top: 20px;
+            padding-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: var(--ch-indigo-transparent);
+            color: var(--ch-white);
+            border-radius: 0.5em;
         }
-    }
-    /* // Small devices (landscape phones, 576px and up) */
-    @media only screen and (min-width: 576px) and (max-width: 768px) {
-        .login-box {
-            width: 400px;
+        .other{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            margin-bottom: 10px;
         }
-    }
+        .login-with-btn {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            transition: background-color var(--animation-speed), box-shadow var(--animation-speed), color var(--animation-speed);
+            padding: 12px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 0.25rem;
+            color: #757575;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .login-with-btn:hover {
+            box-shadow: 0 -1px 0 rgba(0, 0, 0, .04), 0 2px 4px rgba(0, 0, 0, .25);
+            background-color: var(--ch-orange);
+            color: white;
+            cursor: pointer;
+        }
+        .login-with-btn img{
+            height: calc(14px + 1em);
+            transition: filter var(--animation-speed);
+        }
+        .login-with-btn:hover img{
+            filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(2%) hue-rotate(151deg) brightness(106%) contrast(101%);
+        }
+        button{
+            background-color: var(--ch-white);
+        }
+        .chaccount{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+        }
+        .btn-orange{
+            background-color: var(--ch-blue);
+            color: var(--ch-white);
+            margin-top: 30px;
+        }
+        .btn-orange:hover{
+            background-color: var(--ch-orange-hover);
+            color: var(--ch-white);
+        }
+        input:focus{
+            border-color: red;
+        }
+        @media only screen and (max-width: 576px) {
+            .login-box {
+                width: 83vw;
+            }
+        }
+        /* // Small devices (landscape phones, 576px and up) */
+        @media only screen and (min-width: 576px) and (max-width: 768px) {
+            .login-box {
+                width: 400px;
+            }
+        }
 
-    /* // Medium devices (tablets, 768px and up) */
-    @media only screen and (min-width: 768px) and (max-width: 992px) {
-        .login-box {
-            width: 400px;
+        /* // Medium devices (tablets, 768px and up) */
+        @media only screen and (min-width: 768px) and (max-width: 992px) {
+            .login-box {
+                width: 400px;
+            }
         }
-    }
 
-    /* // Large devices (desktops, 992px and up) */
-    @media only screen and (min-width: 992px) and (max-width: 1200px) {
-        .login-box {
-            width: 400px;
+        /* // Large devices (desktops, 992px and up) */
+        @media only screen and (min-width: 992px) and (max-width: 1200px) {
+            .login-box {
+                width: 400px;
+            }
+            .logo{
+                width: 20vw;
+            }
         }
-        .logo{
-            width: 20vw;
-        }
-    }
 
-    /* // Extra large devices (large desktops, 1200px and up) */
-    @media only screen and (min-width: 1200px) {
-        .login-box {
-            width: 400px;
+        /* // Extra large devices (large desktops, 1200px and up) */
+        @media only screen and (min-width: 1200px) {
+            .login-box {
+                width: 400px;
+            }
         }
-    }
-</style>
+    </style>
+</head>
 
+<body>
 <div class="login-box">
     <!-- <h2>Welcome</h2> -->
     <img style="width: 100%;;" src="resources/images/ChrHuygens_logo-horizontaal_RGB_transparant-wit.png" alt="CH Logo">
@@ -327,3 +333,5 @@
         </form>
     </div>
 </div>
+</body>
+</html>
