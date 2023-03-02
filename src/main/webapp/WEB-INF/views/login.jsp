@@ -21,6 +21,69 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
+<base href="https://connect.ch.tudelft.nl">
+
+<meta charset="utf-8">
+<title>CH Connect - Log In</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+<script src="resources/js/lib/html5.js"></script>
+<![endif]-->
+
+<!-- favico -->
+<link rel="shortcut icon" href="resources/images/mitreid-connect.ico">
+
+<!-- Load jQuery up here so that we can use in-page functions -->
+<script type="text/javascript" src="resources/js/lib/jquery.js"></script>
+<script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
+<script type="text/javascript" src="resources/js/lib/i18next.js"></script>
+<script type="text/javascript">
+    $.i18n.init({
+        fallbackLng: "en",
+        lng: "en",
+        resGetPath: "resources/js/locale/__lng__/__ns__.json",
+        ns: {
+            namespaces: ["wisvch","messages"],
+            defaultNs: 'wisvch'
+        },
+        fallbackNS: ["wisvch","messages"]
+    });
+    moment.locale("en");
+    // safely set the title of the application
+    function setPageTitle(title) {
+        document.title = "CH Connect - " + title;
+    }
+
+    // get the info of the current user, if available (null otherwise)
+    function getUserInfo() {
+        return ;
+    }
+
+    // get the authorities of the current user, if available (null otherwise)
+    function getUserAuthorities() {
+        return ["ROLE_ANONYMOUS"];
+    }
+
+    // is the current user an admin?
+    // NOTE: this is just for
+    function isAdmin() {
+        var auth = getUserAuthorities();
+        if (auth && _.contains(auth, "ROLE_ADMIN")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    var heartMode = false;
+
+</script>
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <script type="text/javascript">
     <!--
