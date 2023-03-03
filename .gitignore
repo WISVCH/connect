@@ -9,6 +9,7 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+.mvn/
 
 
 ### Intellij ###
@@ -62,3 +63,5 @@ crashlytics-build.properties
 
 config/application.properties
 kube/
+
+**/.DS_Store
