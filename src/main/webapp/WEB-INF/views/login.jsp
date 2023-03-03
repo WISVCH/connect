@@ -114,20 +114,20 @@
     </script>
 
     <style>
-        :root{
-            --ch-black: rgb(0,0,0);
-            --ch-white: rgb(255,255,255);
-            --ch-indigo: rgb(0,39,74);
-            --ch-indigo-transparent: rgba(0,39,74,0.9);
-            --ch-blue: rgb(144,182,203);
-            --ch-blue-faded: rgba(144,182,203,0.5);
-            --ch-magenta: rgb(232,48,138);
-            --ch-orange: rgb(238,114,3);
-            --ch-orange-hover: rgb(238,114,3,0.85);
+        :root {
+            --ch-black: rgb(0, 0, 0);
+            --ch-white: rgb(255, 255, 255);
+            --ch-indigo: rgb(0, 39, 74);
+            --ch-indigo-transparent: rgba(0, 39, 74, 0.9);
+            --ch-blue: rgb(144, 182, 203);
+            --ch-blue-faded: rgba(144, 182, 203, 0.5);
+            --ch-magenta: rgb(232, 48, 138);
+            --ch-orange: rgb(238, 114, 3);
+            --ch-orange-hover: rgb(238, 114, 3, 0.85);
             --ch-yellow: rgb(251, 187, 33);
             --ch-turqoise: rgb(42, 161, 169);
 
-            --animation-speed: 0.5s;
+            --animation-speed: 0.3s;
         }
         html, body {
             min-height: 100vh;
@@ -193,8 +193,9 @@
         .login-with-btn:hover img{
             filter: brightness(0) saturate(100%) invert(100%) sepia(100%) saturate(2%) hue-rotate(151deg) brightness(106%) contrast(101%);
         }
-        button{
+        button, a[role=button] {
             background-color: var(--ch-white);
+            text-decoration: none;
         }
         .chaccount{
             display: flex;
@@ -260,14 +261,14 @@
     <hr class="w-100" style="border-color: white;" />
     <h4>Log in using</h4>
     <div class="other">
-        <button type="button" class="login-with-btn" onclick="location.href='${pageContext.request.contextPath}/saml2/login';">
+        <a role="button" href="${pageContext.request.contextPath}/saml2/login" class="login-with-btn">
             <img src="resources/images/Google__G__Logo.svg" alt="Google Logo">
             CH Google account
-        </button>
-        <button type="button" class="login-with-btn" onclick="location.href='${pageContext.request.contextPath}/saml/login';">
+        </a>
+        <a role="button" href="${pageContext.request.contextPath}/saml/login" class="login-with-btn">
             <img src="resources/images/TUDelft_logo_cmyk.svg" alt="TU Delft Logo">
             NetID
-        </button>
+        </a>
     </div>
     <div class="form-check">
         <input type="checkbox" id="alwaysUseNetid" value="true" class="form-check-input">
