@@ -64,8 +64,6 @@
         <property name="defaultFailureUrl" value="/login?error=failure"/>
     </bean>
 
-    <bean id="traceRequestFilter" class="ch.wisv.connect.helpers.TraceRequestFilter"/>
-
     <security:authentication-manager id="authenticationManager">
         <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
         <security:authentication-provider ref="delegateSamlAuthenticationProvider"/>
@@ -84,7 +82,6 @@
                              always-use-default-target="true"
                              authentication-failure-handler-ref="authenticationFailureHandler"
                              authentication-success-handler-ref="authenticationTimeStamper"/>
-        <security:custom-filter ref="traceRequestFilter" before="SECURITY_CONTEXT_FILTER"/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/saml/logout" logout-success-url="/login?logout"/>
         <security:anonymous/>

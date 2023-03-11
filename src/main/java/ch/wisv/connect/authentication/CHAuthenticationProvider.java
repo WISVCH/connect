@@ -19,7 +19,6 @@ package ch.wisv.connect.authentication;
 import ch.wisv.connect.model.CHUserDetails;
 import ch.wisv.connect.services.CHUserDetailsService;
 import ch.wisv.connect.services.CHUserDetailsService.CHInvalidMemberException;
-import datadog.trace.api.Trace;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,6 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     CHUserDetailsService userDetailService;
 
-    @Trace
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         Object credentials = authentication.getCredentials();
