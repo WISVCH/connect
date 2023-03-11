@@ -22,11 +22,6 @@ import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Student;
 import ch.wisv.dienst2.apiclient.util.Dienst2Repository;
 import com.google.common.base.Preconditions;
-import datadog.trace.api.DDTags;
-import datadog.trace.api.Trace;
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +65,6 @@ public class CHUserDetailsService implements UserDetailsService {
         this.dienst2Repository = dienst2Repository;
     }
 
-    @Trace
     @Override
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
@@ -81,7 +75,7 @@ public class CHUserDetailsService implements UserDetailsService {
         Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username), meta);
         return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
     }
-    @Trace
+
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByGoogleCredential(SAMLCredential samlCredential) throws CHAuthenticationException {
@@ -125,7 +119,6 @@ public class CHUserDetailsService implements UserDetailsService {
      * @return user details object
      * @throws CHAuthenticationException when membership could not be validated
      */
-    @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetidStudentNumberAndUpdateStudy(String netid, String studentNumber, String study) throws
@@ -195,7 +188,6 @@ public class CHUserDetailsService implements UserDetailsService {
      * @return user details object
      * @throws CHAuthenticationException when membership could not be validated
      */
-    @Trace
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByNetid(String netid) throws CHAuthenticationException {
@@ -208,7 +200,6 @@ public class CHUserDetailsService implements UserDetailsService {
         return createUserDetails(person, CHUserDetails.AuthenticationSource.TU_SSO);
     }
 
-    @Trace
     @Cacheable("userDetails")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserBySubject(String subject) throws CHAuthenticationException {
@@ -225,7 +216,6 @@ public class CHUserDetailsService implements UserDetailsService {
         return createUserDetails(person, null);
     }
 
-    @Trace
     private CHUserDetails createUserDetailsWithGroups(Person person,
                                                   CHUserDetails.AuthenticationSource authenticationSource,
                                             Set<String> groups) {
@@ -233,18 +223,13 @@ public class CHUserDetailsService implements UserDetailsService {
         String ldapUsername = person.getLdapUsername();
         Set<String> ldapGroups = groups;
         if (StringUtils.isNotEmpty(ldapUsername)) {
-            Tracer tracer = GlobalTracer.get();
-            try (Scope scope = tracer.buildSpan("GetLdapGroups").startActive(true)) {
-                scope.span().setTag(DDTags.SERVICE_NAME, "ldap");
-                String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
-                ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}",
-                        new String[]{dn, ldapUsername}, "cn");
-            }
+            String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
+            ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}",
+                    new String[]{dn, ldapUsername}, "cn");
         }
         return new CHUserDetails(person, ldapGroups, authenticationSource);
     }
 
-    @Trace
     private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
         return createUserDetailsWithGroups(person, authenticationSource, Collections.emptySet());
     }
@@ -264,7 +249,6 @@ public class CHUserDetailsService implements UserDetailsService {
         return p;
     }
 
-    @Trace
     private Person updateDienst2(Person person, String netid, String studentNumber, String study) {
         Person patch = new Person();
         List<String> diff = new ArrayList<>(3);

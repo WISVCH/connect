@@ -16,9 +16,6 @@
 
 package ch.wisv.connect.authentication;
 
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import io.opentracing.util.GlobalTracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -41,25 +38,17 @@ public class DelegateFilterAuthenticationProvider implements AuthenticationProvi
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Tracer tracer = GlobalTracer.get();
-
         if (log.isTraceEnabled()) {
             log.trace("Pre-delegate authentication type: {}", authentication.getClass().toString());
         }
 
-        try (Scope scope = tracer.buildSpan("AuthenticationDelegate").startActive(true)) {
-            scope.span().setTag("class", delegate.getClass().getName());
-            authentication = delegate.authenticate(authentication);
-        }
+        authentication = delegate.authenticate(authentication);
 
         if (log.isTraceEnabled()) {
             log.trace("Post-delegate authentication type: {}", authentication.getClass().toGenericString());
         }
 
-        try (Scope scope = tracer.buildSpan("AuthenticationFilter").startActive(true)) {
-            scope.span().setTag("class", filter.getClass().getName());
-            authentication = filter.authenticate(authentication);
-        }
+        authentication = filter.authenticate(authentication);
 
         if (log.isTraceEnabled()) {
             log.trace("Post-filter authentication type: {}", authentication.getClass().toGenericString());
