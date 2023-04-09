@@ -7,8 +7,8 @@ INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 
 INSERT INTO system_scope (scope, description, icon, restricted, default_scope) VALUES
   ('student', 'NetID and student number', 'book', FALSE, TRUE),
-  ('ldap', 'CH LDAP information', 'briefcase', FALSE, TRUE),
-  ('auth', 'CH Auth information', 'lock', FALSE, TRUE);
+  ('ldap', 'CH LDAP information', 'briefcase', FALSE, TRUE);
+
 
 MERGE INTO client_redirect_uri
 USING (SELECT

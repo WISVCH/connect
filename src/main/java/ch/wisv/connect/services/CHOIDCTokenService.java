@@ -42,11 +42,6 @@ public class CHOIDCTokenService extends DefaultOIDCTokenService {
             Set<String> ldapGroups = chUserDetailsService.loadUserBySubject(sub).getLdapGroups();
             idClaims.claim("ldap_groups", ldapGroups);
         }
-
-        if (request.getScope().contains("auth")) {
-            Set<String> googleGroups = chUserDetailsService.loadUserBySubject(sub).getGoogleGroups();
-            idClaims.claim("google_groups", googleGroups);
-        }
     }
 
 }
