@@ -18,6 +18,8 @@ package ch.wisv.dienst2.apiclient.util;
 
 import ch.wisv.dienst2.apiclient.model.Person;
 import ch.wisv.dienst2.apiclient.model.Results;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -26,12 +28,15 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Dienst2 repository
  */
 @SuppressWarnings("unused")
 public class Dienst2Repository {
+    private static final Logger log = LoggerFactory.getLogger(Dienst2Repository.class);
     public static final ParameterizedTypeReference<Results<Person>> PERSON_RESULT_TYPE = new
             ParameterizedTypeReference<Results<Person>>() {
             };
@@ -81,6 +86,25 @@ public class Dienst2Repository {
                 return Optional.empty();
             } else {
                 throw e;
+            }
+        }
+    }
+
+    public Set<String> getGoogleGroups(int id) {
+        try {
+            Set<String> groups = restTemplate.getForObject(personBaseurl + "google_groups/", Set.class, id);
+            // Replace "@ch.tudelft.nl" with "" in all groups
+            Set<String> cleanedGroups = groups.stream()
+                    .map(group -> group.replaceAll("@ch.tudelft.nl", ""))
+                    .collect(Collectors.toSet());
+
+            return cleanedGroups;
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                return null;
+            } else {
+                log.debug("Error while getting google groups for person with id " + id, e);
+                return null;
             }
         }
     }

@@ -35,14 +35,17 @@ public class CHUserDetails implements UserDetails {
 
     private Person person;
     private Set<String> ldapGroups;
+
+    private Set<String> googleGroups;
     private AuthenticationSource authenticationSource;
 
     private static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
     private static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 
-    public CHUserDetails(Person person, Set<String> ldapGroups, AuthenticationSource authenticationSource) {
+    public CHUserDetails(Person person, Set<String> ldapGroups, Set<String> googleGroups, AuthenticationSource authenticationSource) {
         this.person = person;
         this.ldapGroups = ldapGroups;
+        this.googleGroups = googleGroups;
         this.authenticationSource = authenticationSource;
     }
 
@@ -50,7 +53,7 @@ public class CHUserDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // We do not fully trust TU Delft SSO, so we only grant admin authority if logged on through CH LDAP or
         // Google SSO
-        if (ldapGroups.contains("staff") && (authenticationSource == AuthenticationSource.CH_LDAP ||
+        if ((ldapGroups.contains("staff") || googleGroups.contains("staff")) && (authenticationSource == AuthenticationSource.CH_LDAP ||
                 authenticationSource == AuthenticationSource.GOOGLE_SSO)) {
             return ImmutableSet.of(ROLE_ADMIN, ROLE_USER);
         } else {
@@ -98,6 +101,10 @@ public class CHUserDetails implements UserDetails {
 
     public Set<String> getLdapGroups() {
         return ldapGroups;
+    }
+
+    public Set<String> getGoogleGroups() {
+        return googleGroups;
     }
 
     public enum AuthenticationSource {
