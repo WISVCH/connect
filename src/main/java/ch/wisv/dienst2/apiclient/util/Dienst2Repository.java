@@ -92,13 +92,7 @@ public class Dienst2Repository {
 
     public Set<String> getGoogleGroups(int id) {
         try {
-            Set<String> groups = restTemplate.getForObject(personBaseurl + "google_groups/", Set.class, id);
-            // Replace "@ch.tudelft.nl" with "" in all groups
-            Set<String> cleanedGroups = groups.stream()
-                    .map(group -> group.replaceAll("@ch.tudelft.nl", ""))
-                    .collect(Collectors.toSet());
-
-            return cleanedGroups;
+            return restTemplate.getForObject(personBaseurl + "google_groups/", Set.class, id);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 return null;
