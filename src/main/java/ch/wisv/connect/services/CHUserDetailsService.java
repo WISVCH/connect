@@ -82,15 +82,29 @@ public class CHUserDetailsService implements UserDetailsService {
         String email = samlCredential.getNameID().getValue();
         Preconditions.checkArgument(StringUtils.isNotBlank(email), "email must not be blank");
 
-        // The username is the email address without "@ch.tudelft.nl"
-        String username = email.replace("@ch.tudelft.nl", "");
+        // The username is the email address without the domain
+        String username = email.split("@")[0];
 
         String meta = "email=" + email + ", username=" + username;
         log.debug("Loading user by {}", meta);
         // Get the person from Dienst2
         Person person = verifyMembership(dienst2Repository.getPersonFromGoogleUsername(username), meta);
 
-        return createUserDetails(person, CHUserDetails.AuthenticationSource.GOOGLE_SSO);
+        Set<String> groups = new HashSet<>();
+        String[] rawGroups = samlCredential.getAttributeAsStringArray("groups");
+        if (rawGroups != null) {
+            // Loop over the values
+            for (String rawGroup : rawGroups) {
+                // Remove spaces and convert to lowercase
+                String group = rawGroup.replaceAll("\\s", "").toLowerCase();
+                log.debug("- Mapped '{}' to '{}'", rawGroup, group);
+                groups.add(group);
+            }
+        }
+
+        log.debug("Assigning groups to user: {}", groups);
+
+        return createUserDetailsWithGroups(person, CHUserDetails.AuthenticationSource.GOOGLE_SSO, groups);
     }
 
     /**
@@ -202,25 +216,22 @@ public class CHUserDetailsService implements UserDetailsService {
         return createUserDetails(person, null);
     }
 
-    private CHUserDetails createUserDetails(Person person,
-                                                  CHUserDetails.AuthenticationSource authenticationSource) {
+    private CHUserDetails createUserDetailsWithGroups(Person person,
+                                                  CHUserDetails.AuthenticationSource authenticationSource,
+                                            Set<String> groups) {
         assert person != null;
         String ldapUsername = person.getLdapUsername();
-        Set<String> ldapGroups = Collections.emptySet();
+        Set<String> ldapGroups = groups;
         if (StringUtils.isNotEmpty(ldapUsername)) {
             String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
             ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}",
                     new String[]{dn, ldapUsername}, "cn");
         }
+        return new CHUserDetails(person, ldapGroups, authenticationSource);
+    }
 
-        String googleUsername = person.getGoogleUsername();
-        System.out.println("googleUsername: " + googleUsername);
-        Set<String> googleGroups = Collections.emptySet();
-        if (StringUtils.isNotEmpty(googleUsername)) {
-            googleGroups = dienst2Repository.getGoogleGroups(person.getId());
-        }
-
-        return new CHUserDetails(person, ldapGroups, googleGroups, authenticationSource);
+    private CHUserDetails createUserDetails(Person person, CHUserDetails.AuthenticationSource authenticationSource) {
+        return createUserDetailsWithGroups(person, authenticationSource, Collections.emptySet());
     }
 
     private Person verifyMembership(Optional<Person> person, String meta) {

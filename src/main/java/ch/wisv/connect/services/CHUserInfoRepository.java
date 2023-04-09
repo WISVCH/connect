@@ -88,8 +88,6 @@ public class CHUserInfoRepository implements UserInfoRepository {
         ui.setPhoneNumber(person.getPhoneMobile());
         ui.setLdapUsername(person.getLdapUsername());
         ui.setLdapGroups(userDetails.getLdapGroups());
-        ui.setGoogleUsername(person.getGoogleUsername());
-        ui.setGoogleGroups(userDetails.getGoogleGroups());
         ui.setNetid(person.getNetid());
         if (person.getStudent().map(Student::isEnrolled).orElse(false)) {
             ui.setStudentNumber(person.getStudent().map(Student::getStudentNumber).orElse(null));
