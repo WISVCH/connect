@@ -63,8 +63,6 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
 
             if (samlCredential.getRemoteEntityID().startsWith(SAML_GOOGLE_ENTITY_ID)) {
                 log.info("Authenticated via Google SAML: email={}", samlCredential.getNameID().getValue());
-                log.info("Remote entity ID: {}", samlCredential.getRemoteEntityID());
-                log.info("SAML attributes: {}", attributes.stream().map(Attribute::getName).collect(Collectors.joining(", ")));
                 CHUserDetails userDetails = userDetailService.loadUserByGoogleCredential(samlCredential);
                 return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
             }
@@ -76,6 +74,8 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                         String.format("%s=\"%s\"", n, samlCredential.getAttributeAsString(n)))
                         .collect(Collectors.joining(" "));
                 log.info("Authenticated via SAML: netid={} {}", netid, attributesString);
+            } else {
+                log.info("Authenticated via SAML: netid={}", netid);
             }
 
             CHUserDetails userDetails;
