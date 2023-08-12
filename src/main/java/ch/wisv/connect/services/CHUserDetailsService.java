@@ -29,10 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.ldap.SpringSecurityLdapTemplate;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +42,7 @@ import java.util.regex.Pattern;
 /**
  * CH User Details Service
  * <p>
- * Loads Dienst2 Person object and LDAP groups with Dienst2 LDAP username.
+ * Loads Dienst2 Person object and Google groups with Dienst2 Google username.
  */
 @Service
 public class CHUserDetailsService implements UserDetailsService {
@@ -54,14 +52,11 @@ public class CHUserDetailsService implements UserDetailsService {
     private static final Pattern subjectPattern = Pattern.compile(CHUserDetails.SUBJECT_PREFIX + "(\\d+)");
 
     private final Dienst2Repository dienst2Repository;
-    private final SpringSecurityLdapTemplate ldapTemplate;
 
     @Autowired
-    public CHUserDetailsService(LdapContextSource contextSource, Dienst2Repository dienst2Repository) {
-        this.ldapTemplate = new SpringSecurityLdapTemplate(contextSource);
+    public CHUserDetailsService(Dienst2Repository dienst2Repository) {
         SearchControls searchControls = new SearchControls();
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        this.ldapTemplate.setSearchControls(searchControls);
         this.dienst2Repository = dienst2Repository;
     }
 
@@ -69,11 +64,7 @@ public class CHUserDetailsService implements UserDetailsService {
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
     @CacheEvict(cacheNames = "userInfo", key = "#result.subject")
     public CHUserDetails loadUserByUsername(String username) throws CHAuthenticationException {
-        Preconditions.checkArgument(StringUtils.isNotBlank(username), "username must not be blank");
-        String meta = "ldapUsername=" + username;
-        log.debug("Loading user by {}", meta);
-        Person person = verifyMembership(dienst2Repository.getPersonFromLdapUsername(username), meta);
-        return createUserDetails(person, CHUserDetails.AuthenticationSource.CH_LDAP);
+        throw new CHDeprecationException();
     }
 
     @CachePut(cacheNames = "userDetails", key = "#result.subject")
@@ -205,13 +196,6 @@ public class CHUserDetailsService implements UserDetailsService {
     private CHUserDetails createUserDetails(Person person,
                                                   CHUserDetails.AuthenticationSource authenticationSource) {
         assert person != null;
-        String ldapUsername = person.getLdapUsername();
-        Set<String> ldapGroups = Collections.emptySet();
-        if (StringUtils.isNotEmpty(ldapUsername)) {
-            String dn = String.format("uid=%s,ou=People,dc=ank,dc=chnet", ldapUsername);
-            ldapGroups = ldapTemplate.searchForSingleAttributeValues("ou=Group", "memberUid={1}",
-                    new String[]{dn, ldapUsername}, "cn");
-        }
 
         String googleUsername = person.getGoogleUsername();
         System.out.println("googleUsername: " + googleUsername);
@@ -220,7 +204,7 @@ public class CHUserDetailsService implements UserDetailsService {
             googleGroups = dienst2Repository.getGoogleGroups(person.getId());
         }
 
-        return new CHUserDetails(person, ldapGroups, googleGroups, authenticationSource);
+        return new CHUserDetails(person, googleGroups, authenticationSource);
     }
 
     private Person verifyMembership(Optional<Person> person, String meta) {
@@ -289,6 +273,12 @@ public class CHUserDetailsService implements UserDetailsService {
     public static class CHMemberConflictException extends CHAuthenticationException {
         public CHMemberConflictException() {
             super("Conflict between NetID and student number");
+        }
+    }
+
+    public static class CHDeprecationException extends CHAuthenticationException {
+        public CHDeprecationException() {
+            super("This service is deprecated");
         }
     }
 }

@@ -5,7 +5,7 @@
 OpenID Connect (OIDC) lets you log into a remote site or application using your identity without exposing your
 credentials. In addition, OIDC can provide this application with additional user information like full name or phone
 number. For W.I.S.V. 'Christiaan Huygens', this OIDC implementation is configured to allow login through TU Delft NetID
-(SAML) and CH Accounts (LDAP). Both login methods are linked to the [Dienst2][dienst2] member administration to verify
+(SAML) and CH Google Accounts. Both login methods are linked to the [Dienst2][dienst2] member administration to verify
 identity. Dienst2 is also the source of any additional user information.
 
 This code is hosted for production use at [connect.ch.tudelft.nl][prod]. Developers can register their own applications

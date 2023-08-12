@@ -29,7 +29,6 @@
                            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
                            http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.3.xsd">
 
-    <import resource="wisvch-ldap.xml"/>
     <import resource="wisvch-saml.xml"/>
 
     <context:property-placeholder location="file:${spring.config.location}"/>
@@ -38,9 +37,6 @@
 
     <bean id="chAuthenticationProvider" class="ch.wisv.connect.authentication.CHAuthenticationProvider"/>
 
-    <bean id="delegateLdapAuthenticationProvider"
-          class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
-          c:delegate-ref="ldapAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
     <bean id="delegateSamlAuthenticationProvider"
           class="ch.wisv.connect.authentication.DelegateFilterAuthenticationProvider"
           c:delegate-ref="samlAuthenticationProvider" c:filter-ref="chAuthenticationProvider"/>
@@ -65,7 +61,6 @@
     </bean>
 
     <security:authentication-manager id="authenticationManager">
-        <security:authentication-provider ref="delegateLdapAuthenticationProvider"/>
         <security:authentication-provider ref="delegateSamlAuthenticationProvider"/>
     </security:authentication-manager>
 
@@ -76,12 +71,7 @@
     <security:http authentication-manager-ref="authenticationManager">
         <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
-        <security:form-login login-page="/login"
-                             login-processing-url="/ldap/login"
-                             default-target-url="/"
-                             always-use-default-target="true"
-                             authentication-failure-handler-ref="authenticationFailureHandler"
-                             authentication-success-handler-ref="authenticationTimeStamper"/>
+        <security:http-basic/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/logout" logout-success-url="/login?logout"/>
         <security:anonymous/>

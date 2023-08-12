@@ -62,7 +62,7 @@ public class CHUserInfoRepository implements UserInfoRepository {
         Person person = userDetails.getPerson();
         CHUserInfo ui = new CHUserInfo();
         ui.setSub(userDetails.getUsername());
-        String preferredUsername = StringUtils.isNotBlank(person.getLdapUsername()) ? person.getLdapUsername() :
+        String preferredUsername = StringUtils.isNotBlank(person.getGoogleUsername()) ? person.getGoogleUsername() :
                 person.getNetid();
         ui.setPreferredUsername(preferredUsername);
         ui.setEmail(person.getEmail());
@@ -86,8 +86,6 @@ public class CHUserInfoRepository implements UserInfoRepository {
                 break;
         }
         ui.setPhoneNumber(person.getPhoneMobile());
-        ui.setLdapUsername(person.getLdapUsername());
-        ui.setLdapGroups(userDetails.getLdapGroups());
         ui.setGoogleUsername(person.getGoogleUsername());
         ui.setGoogleGroups(userDetails.getGoogleGroups());
         ui.setNetid(person.getNetid());

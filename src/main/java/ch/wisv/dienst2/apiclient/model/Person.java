@@ -40,8 +40,6 @@ public class Person extends Entity implements Serializable {
     private String gender;
     private LocalDate birthdate;
 
-    private String ldapUsername;
-
     private String googleUsername;
 
     private String netid;
@@ -84,10 +82,6 @@ public class Person extends Entity implements Serializable {
 
     public LocalDate getBirthdate() {
         return birthdate;
-    }
-
-    public String getLdapUsername() {
-        return ldapUsername;
     }
 
     public String getGoogleUsername() {
@@ -136,7 +130,6 @@ public class Person extends Entity implements Serializable {
                 Objects.equals(phoneMobile, person.phoneMobile) &&
                 Objects.equals(gender, person.gender) &&
                 Objects.equals(birthdate, person.birthdate) &&
-                Objects.equals(ldapUsername, person.ldapUsername) &&
                 Objects.equals(googleUsername, person.googleUsername) &&
                 Objects.equals(netid, person.netid) &&
                 membershipStatus == person.membershipStatus &&
@@ -146,7 +139,7 @@ public class Person extends Entity implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), formattedName, titles, initials, firstname, preposition, surname,
-                postfixTitles, phoneMobile, gender, birthdate, ldapUsername, googleUsername, netid, membershipStatus,
+                postfixTitles, phoneMobile, gender, birthdate, googleUsername, netid, membershipStatus,
                 student);
     }
 }
