@@ -276,6 +276,33 @@
             Always log in with NetID on this device
         </label>
     </div>
+    <c:if test="${ param.error != null }">
+        <div class="alert alert-danger" role="alert" style="width: 100%;">
+            <c:choose>
+                <c:when test="${ param.chMemberError == 'conflict'}">
+                    Your CH membership record contains conflicting information. Please
+                    <a href="https://ch.tudelft.nl/contact/">contact the board</a> so that we can correct your
+                    information in our membership administration. In your message, include your NetID and student number
+                    (if applicable).
+                </c:when>
+                <c:when test="${ param.chMemberError == 'invalid'}">
+                    We could not find a valid CH membership record linked to your login information. If you are a
+                    current CH member, please <a href="https://ch.tudelft.nl/contact/">contact the board</a> so that we
+                    can correct your information in our membership administration. In your message, include your NetID
+                    and student number (if applicable).
+                </c:when>
+                <c:otherwise>
+                    <spring:message code="login.error"/>
+                </c:otherwise>
+            </c:choose>
+        </div>
+    </c:if>
+
+    <c:if test="${ param.logout != null }">
+        <div class="alert alert-success">
+            You have been logged out.
+        </div>
+    </c:if>
 </div>
 </body>
 </html>
