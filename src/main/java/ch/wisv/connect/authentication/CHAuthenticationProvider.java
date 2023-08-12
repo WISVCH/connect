@@ -27,7 +27,6 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.security.saml.SAMLCredential;
 
 import java.util.List;
@@ -94,13 +93,6 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                     throw new CHInvalidMemberException();
             }
 
-            return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
-        } else if (principal instanceof LdapUserDetails) {
-            LdapUserDetails ldapUserDetails = (LdapUserDetails) principal;
-            String ldapUsername = ldapUserDetails.getUsername();
-            log.info("Authenticated via LDAP: username={}", ldapUsername);
-
-            CHUserDetails userDetails = userDetailService.loadUserByUsername(ldapUsername);
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
         } else {
             log.debug("Invalid authentication object type");

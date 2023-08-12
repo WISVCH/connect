@@ -35,8 +35,6 @@ public class CHUserInfo extends DefaultUserInfo {
     private String netid;
     private String studentNumber;
     private String study;
-    private String ldapUsername;
-    private Set<String> ldapGroups;
     private String googleUsername;
     private Set<String> googleGroups;
 
@@ -71,18 +69,6 @@ public class CHUserInfo extends DefaultUserInfo {
         this.study = study;
     }
 
-    public String getLdapUsername() {
-        return ldapUsername;
-    }
-
-    public void setLdapUsername(String ldapUsername) {
-        this.ldapUsername = ldapUsername;
-    }
-
-    public Set<String> getLdapGroups() {
-        return ldapGroups;
-    }
-
     public String getGoogleUsername() {
         return googleUsername;
     }
@@ -93,10 +79,6 @@ public class CHUserInfo extends DefaultUserInfo {
 
     public void setGoogleUsername(String googleUsername) {
         this.googleUsername = googleUsername;
-    }
-
-    public void setLdapGroups(Set<String> ldapGroups) {
-        this.ldapGroups = ldapGroups;
     }
 
     public void setGoogleGroups(Set<String> googleGroups) {
@@ -121,8 +103,6 @@ public class CHUserInfo extends DefaultUserInfo {
             obj.addProperty("netid", this.getNetid());
             obj.addProperty("student_number", this.getStudentNumber());
             obj.addProperty("study", this.getStudy());
-            obj.addProperty("ldap_username", this.getLdapUsername());
-            obj.add("ldap_groups", gson.toJsonTree(ldapGroups));
             obj.addProperty("google_username", this.getGoogleUsername());
             obj.add("google_groups", gson.toJsonTree(googleGroups));
 
@@ -160,8 +140,6 @@ public class CHUserInfo extends DefaultUserInfo {
         ui.setNetid(nullSafeGetString(obj, "netid"));
         ui.setStudentNumber(nullSafeGetString(obj, "student_number"));
         ui.setStudy(nullSafeGetString(obj, "study"));
-        ui.setLdapUsername(nullSafeGetString(obj, "ldap_username"));
-        ui.setLdapGroups(gson.fromJson(obj.get("ldap_groups"), stringSetType));
         ui.setGoogleUsername(nullSafeGetString(obj, "google_username"));
         ui.setGoogleGroups(gson.fromJson(obj.get("google_groups"), stringSetType));
 
@@ -181,14 +159,12 @@ public class CHUserInfo extends DefaultUserInfo {
         return Objects.equals(netid, that.netid) &&
                 Objects.equals(studentNumber, that.studentNumber) &&
                 Objects.equals(study, that.study) &&
-                Objects.equals(ldapUsername, that.ldapUsername) &&
-                Objects.equals(ldapGroups, that.ldapGroups) &&
                 Objects.equals(googleUsername, that.googleUsername) &&
                 Objects.equals(googleGroups, that.googleGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), netid, studentNumber, study, ldapUsername, ldapGroups, googleUsername, googleGroups);
+        return Objects.hash(super.hashCode(), netid, studentNumber, study, googleUsername, googleGroups);
     }
 }

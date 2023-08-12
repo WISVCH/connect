@@ -66,8 +66,6 @@ public class CHScopeClaimTranslationService implements ScopeClaimTranslationServ
 
         scopesToClaims.put("address", "address");
 
-        scopesToClaims.put("ldap", "ldap_username");
-        scopesToClaims.put("ldap", "ldap_groups");
         scopesToClaims.put("auth", "google_username");
         scopesToClaims.put("auth", "google_groups");
 

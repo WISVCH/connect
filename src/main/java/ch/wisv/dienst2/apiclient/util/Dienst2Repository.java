@@ -50,13 +50,6 @@ public class Dienst2Repository {
         this.personBaseurl = baseUrl + "/ldb/api/v3/people/{id}/";
     }
 
-    public Optional<Person> getPersonFromLdapUsername(String ldapUsername) {
-        String url = baseUrl + "/ldb/api/v3/people/?ldap_username={username}";
-        ResponseEntity<Results<Person>> e = restTemplate.exchange(url, HttpMethod.GET, null, PERSON_RESULT_TYPE,
-                ldapUsername);
-        return getAtMostOneResult(e);
-    }
-
     public Optional<Person> getPersonFromGoogleUsername(String googleUsername) {
         String url = baseUrl + "/ldb/api/v3/people/?google_username={username}";
         ResponseEntity<Results<Person>> e = restTemplate.exchange(url, HttpMethod.GET, null, PERSON_RESULT_TYPE,
