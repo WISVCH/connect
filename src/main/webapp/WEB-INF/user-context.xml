@@ -71,7 +71,12 @@
     <security:http authentication-manager-ref="authenticationManager">
         <security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')"/>
         <security:intercept-url pattern="/**" access="permitAll"/>
-        <security:http-basic/>
+        <security:form-login login-page="/login"
+                             login-processing-url="/saml/login"
+                             default-target-url="/"
+                             always-use-default-target="true"
+                             authentication-failure-handler-ref="authenticationFailureHandler"
+                             authentication-success-handler-ref="authenticationTimeStamper"/>
         <security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER"/>
         <security:logout logout-url="/logout" logout-success-url="/login?logout"/>
         <security:anonymous/>
