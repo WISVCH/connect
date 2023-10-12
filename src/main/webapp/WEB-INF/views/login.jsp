@@ -133,7 +133,7 @@
             min-height: 100vh;
         }
         body  {
-            background-image: url("resources/images/FRZ01185.jpg");
+            background-image: url("resources/images/owl.webp");
             backdrop-filter: blur(5px);
             background-size: cover;
             background-position: center;
