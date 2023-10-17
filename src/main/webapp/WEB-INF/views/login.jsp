@@ -134,6 +134,7 @@
         }
         body  {
             background-image: url("resources/images/owl.webp");
+            -webkit-backdrop-filter: blur(5px);
             backdrop-filter: blur(5px);
             background-size: cover;
             background-position: center;
