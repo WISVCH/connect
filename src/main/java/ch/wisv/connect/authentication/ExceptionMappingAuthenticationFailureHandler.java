@@ -39,9 +39,6 @@ public class ExceptionMappingAuthenticationFailureHandler extends SimpleUrlAuthe
                                         AuthenticationException exception) throws IOException, ServletException {
         String url = failureUrlMap.get(exception.getClass().getName());
 
-        logger.info("Exception: " + exception.getClass().getName());
-        logger.info("Message: " + exception.getMessage());
-
         if (url != null) {
             if (isUseForward()) {
                 logger.debug("Authentication failure, forwarding to " + url);
