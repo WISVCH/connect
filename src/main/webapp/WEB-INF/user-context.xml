@@ -53,6 +53,8 @@
             <map>
                 <entry key="ch.wisv.connect.services.CHUserDetailsService$CHInvalidMemberException"
                        value="/login?error=failure&amp;chMemberError=invalid"/>
+                <entry key="ch.wisv.connect.services.CHUserDetailsService$CHPreStudentAuthenticatedException"
+                       value="/login?error=failure&amp;chMemberError=pre-student"/>
                 <entry key="ch.wisv.connect.services.CHUserDetailsService$CHMemberConflictException"
                        value="/login?error=failure&amp;chMemberError=conflict"/>
             </map>

@@ -270,6 +270,12 @@ public class CHUserDetailsService implements UserDetailsService {
         }
     }
 
+    public static class CHPreStudentAuthenticatedException extends CHAuthenticationException {
+        public CHPreStudentAuthenticatedException() {
+            super("Prospective student has authenticated, please wait until the academic year has started");
+        }
+    }
+
     public static class CHMemberConflictException extends CHAuthenticationException {
         public CHMemberConflictException() {
             super("Conflict between NetID and student number");
