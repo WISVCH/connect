@@ -19,6 +19,7 @@ package ch.wisv.connect.authentication;
 import ch.wisv.connect.model.CHUserDetails;
 import ch.wisv.connect.services.CHUserDetailsService;
 import ch.wisv.connect.services.CHUserDetailsService.CHInvalidMemberException;
+import ch.wisv.connect.services.CHUserDetailsService.CHPreStudentAuthenticatedException;
 import org.opensaml.saml2.core.Attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +91,11 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                     break;
                 default:
                     log.warn("Unsupported SAML affiliation: affiliation={}", affiliation);
-                    throw new CHInvalidMemberException();
+                    if (affiliation.equals("pre-student")) {
+                        throw new CHPreStudentAuthenticatedException();
+                    } else {
+                        throw new CHInvalidMemberException();
+                    }
             }
 
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
