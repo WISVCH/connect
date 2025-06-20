@@ -293,12 +293,11 @@
                     and student number (if applicable).
                 </c:when>
                 <c:when test="${ param.chMemberError == 'pre-student'}">
-                    Your CH membership has been properly registered, however your student account is marked as "Pre-Student"
-                    indicating you account has not been fully enabled yet. Please wait until the academic year has started, 
-                    and then you should be able to login. If you are still not able to log-in while you believe you should, 
-                    please do not hesitate to <a href="https://ch.tudelft.nl/contact/">contact the board</a> so we can 
-                    correct your information in our membership administration. In your message, include your NetID and student 
-                    number (if applicable).<br>
+                    Your student account is marked as "Pre-Student" indicating you account has not been fully enabled yet.
+                    Please wait until the academic year has started, and then try again. If you are still not able to 
+                    log-in while you believe you should, please do not hesitate to <a href="https://ch.tudelft.nl/contact/">contact the board</a> 
+                    so we can correct your information in our membership administration. In your message, include your 
+                    NetID and student number (if applicable).<br>
                     Welcome to the TU Delft and hope to see you soon!
                 </c:when>
                 <c:otherwise>
