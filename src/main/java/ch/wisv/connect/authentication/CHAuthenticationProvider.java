@@ -81,6 +81,8 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
             CHUserDetails userDetails;
             String affiliation = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_AFFILIATION);
             switch (affiliation) {
+                case "pre-student":
+                    throw new CHPreStudentAuthenticatedException();
                 case "student":
                     String studentNumber = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_STUDENTNUMBER);
                     String study = samlCredential.getAttributeAsString(SAML_ATTRIBUTE_DEPARTMENT);
@@ -91,11 +93,7 @@ public class CHAuthenticationProvider implements AuthenticationProvider {
                     break;
                 default:
                     log.warn("Unsupported SAML affiliation: affiliation={}", affiliation);
-                    if (affiliation.equals("pre-student")) {
-                        throw new CHPreStudentAuthenticatedException();
-                    } else {
-                        throw new CHInvalidMemberException();
-                    }
+                    throw new CHInvalidMemberException();
             }
 
             return CHAuthenticationToken.createAuthenticationToken(authentication, userDetails);
