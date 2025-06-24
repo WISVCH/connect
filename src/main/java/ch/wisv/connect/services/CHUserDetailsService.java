@@ -198,9 +198,9 @@ public class CHUserDetailsService implements UserDetailsService {
         assert person != null;
 
         String googleUsername = person.getGoogleUsername();
-        System.out.println("googleUsername: " + googleUsername);
         Set<String> googleGroups = Collections.emptySet();
         if (StringUtils.isNotEmpty(googleUsername)) {
+            log.info("Retrieving Google groups for {}", googleUsername);
             googleGroups = dienst2Repository.getGoogleGroups(person.getId());
         }
 
