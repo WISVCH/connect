@@ -11,6 +11,7 @@ FROM tomcat:9-jre8-slim
 RUN rm -rf /usr/local/tomcat/webapps/*
 
 COPY context.xml /usr/local/tomcat/conf/context.xml
+COPY server.xml /usr/local/tomcat/conf/server.xml
 COPY --from=builder /src/target/connect.war /usr/local/tomcat/webapps/ROOT.war
 
 RUN chown 998 /usr/local/tomcat/webapps /usr/local/tomcat/temp
